@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Views
 {
-    interface IViewGames
+   public interface IViewGames
     {
     }
 }

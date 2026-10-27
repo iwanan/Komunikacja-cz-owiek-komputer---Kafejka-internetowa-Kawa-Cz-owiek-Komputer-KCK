@@ -33,7 +33,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
         public MainMenuChoice Show()
         {
-            Console.Clear();
+            ConsoleHelper.TryClear();
 
             int row = 1;
             foreach (string line in Logo)

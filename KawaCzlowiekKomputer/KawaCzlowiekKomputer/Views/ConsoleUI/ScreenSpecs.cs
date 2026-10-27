@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Views.ConsoleUI
 {
-    class ScreenSpecs
+   public class ScreenSpecs
     {
     }
 }

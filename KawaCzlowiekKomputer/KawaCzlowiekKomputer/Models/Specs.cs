@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Models
 {
-    class Specs
+  public  class Specs
     {
     }
 }

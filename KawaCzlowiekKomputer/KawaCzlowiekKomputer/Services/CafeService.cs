@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Services
 {
-    class CafeService
+   public class CafeService
     {
     }
 }

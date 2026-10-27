@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Views.Components
 {
-    class Table
+   public class Table
     {
     }
 }

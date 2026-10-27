@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Repos
 {
-    interface IRepo
+   public interface IRepo
     {
     }
 }

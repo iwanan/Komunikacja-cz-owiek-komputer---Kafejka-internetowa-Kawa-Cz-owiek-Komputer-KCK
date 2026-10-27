@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Models
 {
-    public class User
-    {
-        public int Id { get; set; }
-        public string Login { get; set; }
-        public string PasswordHash { get; set; }
-        public string Solt { get; set; }
-        public string Email { get; set; }
-    }
+    public class User : IHasId
+{
+    public int Id { get; set; }
+    public string Login { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
+    public string Salt { get; set; } = string.Empty; 
+    public string Email { get; set; } = string.Empty;
+}
 }

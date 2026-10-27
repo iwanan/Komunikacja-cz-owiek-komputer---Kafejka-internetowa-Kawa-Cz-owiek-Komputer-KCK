@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Controllers
 {
-    class AuthController
+   public class AuthController
     {
     }
 }

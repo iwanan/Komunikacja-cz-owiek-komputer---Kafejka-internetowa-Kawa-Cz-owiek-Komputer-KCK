@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Views
 {
-    interface IViewSpecs
+   public interface IViewSpecs
     {
     }
 }

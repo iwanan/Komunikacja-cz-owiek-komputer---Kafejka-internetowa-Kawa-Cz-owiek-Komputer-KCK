@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace KawaCzlowiekKomputer.Models
 {
-    class Game
+public class Game : IHasId
     {
+        public int Id { get; set; }
     }
 }
