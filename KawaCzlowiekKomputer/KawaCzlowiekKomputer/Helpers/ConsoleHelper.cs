@@ -27,6 +27,15 @@ namespace KawaCzlowiekKomputer.Helpers
             try { Console.Clear(); }
             catch (IOException) { }
         }
+         // wysokość okna albo 25, gdy nie da się jej odczytać
+        public static int WindowHeight
+        {
+            get
+            {
+                try { return Console.WindowHeight > 0 ? Console.WindowHeight : 25; }
+                catch (IOException) { return 25; }
+            }
+        }
 
         // szerokość okna albo 80, gdy nie da się jej odczytać
         public static int WindowWidth

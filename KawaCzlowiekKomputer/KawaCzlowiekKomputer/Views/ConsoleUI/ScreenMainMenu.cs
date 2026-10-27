@@ -47,7 +47,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             int menuTop = row;
             _bottomRow = menuTop + Options.Length + 1;
 
-            WriteCentered("↑↓ wybierz    Enter zatwierdź    Esc wyjście", _bottomRow, Colors.Hint);
+            new Legend(("[↑/↓]", "Wybór"), ("[Enter]", "Zatwierdź"), ("[Esc]", "Wyjście")).Draw();
 
             var menu = new MenuArrow(Options.Select(o => o.Text), -1, menuTop);
             int? selected = menu.Show();
