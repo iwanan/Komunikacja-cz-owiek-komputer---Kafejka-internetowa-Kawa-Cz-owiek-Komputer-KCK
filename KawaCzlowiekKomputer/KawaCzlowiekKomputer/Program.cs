@@ -1,4 +1,5 @@
-﻿using KawaCzlowiekKomputer.Views;
+﻿using KawaCzlowiekKomputer.Helpers;
+using KawaCzlowiekKomputer.Views;
 using KawaCzlowiekKomputer.Views.ConsoleUI;
 
 namespace KawaCzlowiekKomputer
@@ -8,8 +9,10 @@ namespace KawaCzlowiekKomputer
         static void Main(string[] args)
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
-            Console.CursorVisible = false;
-            Console.Title = "Kawa Człowiek Komputer";
+            ConsoleHelper.TryHideCursor();
+
+            try { Console.Title = "Kawa Człowiek Komputer"; }
+            catch (IOException) { } // tytuł okna nie jest krytyczny
 
             // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
@@ -32,9 +35,8 @@ namespace KawaCzlowiekKomputer
             }
 
             Console.ResetColor();
-            Console.Clear();
-            Console.CursorVisible = true;
+            ConsoleHelper.TryClear();
+            ConsoleHelper.TryShowCursor();
         }
     }
 }
-

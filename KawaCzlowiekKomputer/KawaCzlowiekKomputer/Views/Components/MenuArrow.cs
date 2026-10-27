@@ -31,7 +31,7 @@ namespace KawaCzlowiekKomputer.Views.Components
 
             _textWidth = _items.Max(i => i.Length);
             _top = top;
-            _left = left < 0 ? Math.Max(0, (Console.WindowWidth - Width) / 2) : left;
+            _left = left < 0 ? Math.Max(0, (ConsoleHelper.WindowWidth - Width) / 2) : left;
         }
 
         /// <summary>Szerokość narysowanej pozycji menu w znakach.</summary>
