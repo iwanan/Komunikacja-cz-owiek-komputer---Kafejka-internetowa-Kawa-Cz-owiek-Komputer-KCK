@@ -31,30 +31,43 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
         private int _bottomRow;
 
-        public MainMenuChoice Show()
+          public MainMenuChoice Show()
         {
-            ConsoleHelper.TryClear();
+            int selected = 0;
 
-            int row = 1;
-            foreach (string line in Logo)
-                WriteCentered(line, row++, Colors.Title);
+            // pętla przerysowuje cały ekran po zmianie rozmiaru okna
+            while (true)
+            {
+                ConsoleHelper.TryClear();
 
-            row++;
-            WriteCentered("KAWA · CZŁOWIEK · KOMPUTER", row++, Colors.Accent);
-            WriteCentered("Kafejka internetowa", row++, Colors.Hint);
+                int row = 1;
+                foreach (string line in Logo)
+                    WriteCentered(line, row++, Colors.Title);
 
-            row += 2;
-            int menuTop = row;
-            _bottomRow = menuTop + Options.Length + 1;
+                row++;
+                WriteCentered("KAWA · CZŁOWIEK · KOMPUTER", row++, Colors.Accent);
+                WriteCentered("Kafejka internetowa", row++, Colors.Hint);
 
-            new Legend(("[↑/↓]", "Wybór"), ("[Enter]", "Zatwierdź"), ("[Esc]", "Wyjście")).Draw();
+                row += 2;
+                int menuTop = row;
+                _bottomRow = menuTop + Options.Length + 1;
 
-            var menu = new MenuArrow(Options.Select(o => o.Text), -1, menuTop);
-            int? selected = menu.Show();
+                new Legend(("[↑/↓]", "Wybór"), ("[Enter]", "Zatwierdź"), ("[Esc]", "Wyjście")).Draw();
 
-            // Esc traktujemy jako wyjście z programu
-            return selected is null ? MainMenuChoice.Exit : Options[selected.Value].Choice;
+                var menu = new MenuArrow(Options.Select(o => o.Text), -1, menuTop, selected);
+                int? result = menu.Show();
+
+                if (menu.Resized)
+                {
+                    selected = menu.Selected; // po przerysowaniu zostaje ten sam wybór
+                    continue;
+                }
+
+                // Esc traktujemy jako wyjście z programu
+                return result is null ? MainMenuChoice.Exit : Options[result.Value].Choice;
+            }
         }
+
 
         public void ShowMessage(string text)
         {

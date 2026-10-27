@@ -20,6 +20,13 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             _rules = rules;
             _selected = 0;
 
+            // przerysowuje ekran po każdej zmianie rozmiaru okna
+            while (DrawAndWait()) { }
+        }
+
+        // zwraca true, gdy trzeba przerysować ekran (zmiana rozmiaru), false po Esc
+        private bool DrawAndWait()
+        {
             ConsoleHelper.TryClear(); // jedyne czyszczenie, przy wejściu na ekran
 
             _width = Math.Clamp(ConsoleHelper.WindowWidth - 4, 40, 76);
@@ -27,23 +34,27 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
             int top = 1;
             _listTop = top + 2;
-            int separatorRow = _listTop + Math.Max(rules.Count, 1) + 1;
+            int separatorRow = _listTop + Math.Max(_rules.Count, 1) + 1;
             _detailTop = separatorRow + 1;
             int bottomRow = _detailTop + DetailLines + 1;
 
             // statyczne elementy rysujemy raz
             Border.Draw(_left, top, _width, bottomRow - top + 1, title: "Regulamin");
 
-            if (rules.Count == 0)
+            if (_rules.Count == 0)
             {
                 WriteAt(_left + 2, _listTop, "Brak punktów regulaminu.", Colors.Warning);
                 new Legend(("[Esc]", "Wróć")).Draw();
-                WaitForEscape();
-                return;
+
+                while (true)
+                {
+                    if (!ConsoleHelper.WaitForKey(out ConsoleKeyInfo k)) return true;
+                    if (k.Key == ConsoleKey.Escape) return false;
+                }
             }
 
             DrawSeparator(separatorRow);
-            for (int i = 0; i < rules.Count; i++)
+            for (int i = 0; i < _rules.Count; i++)
                 DrawItem(i);
             DrawDetail();
 
@@ -51,7 +62,9 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
             while (true)
             {
-                switch (Console.ReadKey(true).Key)
+                if (!ConsoleHelper.WaitForKey(out ConsoleKeyInfo key)) return true;
+
+                switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
                         MoveTo((_selected - 1 + _rules.Count) % _rules.Count);
@@ -70,7 +83,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                         break;
 
                     case ConsoleKey.Escape:
-                        return;
+                        return false;
                 }
             }
         }
@@ -156,11 +169,6 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();
-        }
-
-        private static void WaitForEscape()
-        {
-            while (Console.ReadKey(true).Key != ConsoleKey.Escape) { }
         }
     }
 }

@@ -8,10 +8,8 @@ using KawaCzlowiekKomputer.Helpers;
 
 namespace KawaCzlowiekKomputer.Views.Components
 {
-    /// <summary>
-    /// Menu sterowane strzałkami. Przy zmianie zaznaczenia przerysowuje
-    /// tylko dwie linie (poprzednią i nową), bez Console.Clear().
-    /// </summary>
+    // Menu sterowane strzałkami. Przy zmianie zaznaczenia przerysowuje
+    // tylko dwie linie (poprzednią i nową), bez Console.Clear().
     public class MenuArrow
     {
         private readonly string[] _items;
@@ -20,10 +18,10 @@ namespace KawaCzlowiekKomputer.Views.Components
         private readonly int _textWidth;
         private int _selected=0;
 
-        /// <param name="items">Teksty pozycji.</param>
-        /// <param name="left">Kolumna lewej krawędzi; wartość ujemna = wyśrodkuj w poziomie.</param>
-        /// <param name="top">Wiersz pierwszej pozycji.</param>
-        public MenuArrow(IEnumerable<string> items, int left, int top)
+        // Teksty pozycji
+        // Kolumna lewej krawędzi; wartość ujemna = wyśrodkuj w poziomie
+        // Wiersz pierwszej pozycji
+          public MenuArrow(IEnumerable<string> items, int left, int top, int selected = 0)
         {
             _items = items.ToArray();
             if (_items.Length == 0)
@@ -32,15 +30,19 @@ namespace KawaCzlowiekKomputer.Views.Components
             _textWidth = _items.Max(i => i.Length);
             _top = top;
             _left = left < 0 ? Math.Max(0, (ConsoleHelper.WindowWidth - Width) / 2) : left;
+             _selected = Math.Clamp(selected, 0, _items.Length - 1); // zachowuje wybór po przerysowaniu
         }
 
-        /// <summary>Szerokość narysowanej pozycji menu w znakach.</summary>
+        // szerokość narysowanej pozycji menu w znakach
         public int Width => _textWidth + 4;
+         // true, gdy Show() przerwano z powodu zmiany rozmiaru okna
+        public bool Resized { get; private set; }
 
-        /// <summary>
-        /// Pokazuje menu i czeka na wybór.
-        /// Zwraca indeks wybranej pozycji albo null po naciśnięciu Esc.
-        /// </summary>
+        // aktualnie zaznaczona pozycja
+        public int Selected => _selected;
+
+        // Pokazuje menu i czeka na wybór
+        // Zwraca indeks wybranej pozycji albo null po naciśnięciu Esc
         public int? Show()
         {
             for (int i = 0; i < _items.Length; i++)
@@ -48,7 +50,13 @@ namespace KawaCzlowiekKomputer.Views.Components
 
             while (true)
             {
-                switch (Console.ReadKey(true).Key)
+                  if (!ConsoleHelper.WaitForKey(out ConsoleKeyInfo key))
+                {
+                    Resized = true;
+                    return null;
+                }
+
+                switch (key.Key)
                 {
                     case ConsoleKey.UpArrow:
                         MoveTo((_selected - 1 + _items.Length) % _items.Length);
