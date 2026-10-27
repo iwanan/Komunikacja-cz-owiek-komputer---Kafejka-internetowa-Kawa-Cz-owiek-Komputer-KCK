@@ -4,9 +4,73 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using KawaCzlowiekKomputer.Helpers;
+using KawaCzlowiekKomputer.Views.Components;
+
 namespace KawaCzlowiekKomputer.Views.ConsoleUI
 {
-    class ScreenMainMenu
+    public class ScreenMainMenu : IViewMainMenu
     {
+        private static readonly string[] Logo =
+        {
+            @" _  __   ____  _  __ ",
+            @"| |/ /  / ___|| |/ / ",
+            @"| ' /  | |    | ' /  ",
+            @"| . \  | |___ | . \  ",
+            @"|_|\_\  \____||_|\_\ "
+        };
+
+        private static readonly (string Text, MainMenuChoice Choice)[] Options =
+        {
+            ("Logowanie klienta",   MainMenuChoice.Login),
+            ("Rejestracja konta",   MainMenuChoice.Register),
+            ("Logowanie pracownika", MainMenuChoice.EmployeeLogin),
+            ("Regulamin",           MainMenuChoice.Rules),
+            ("Wyjście",             MainMenuChoice.Exit)
+        };
+
+        private int _bottomRow;
+
+        public MainMenuChoice Show()
+        {
+            Console.Clear();
+
+            int row = 1;
+            foreach (string line in Logo)
+                WriteCentered(line, row++, Colors.Title);
+
+            row++;
+            WriteCentered("KAWA · CZŁOWIEK · KOMPUTER", row++, Colors.Accent);
+            WriteCentered("Kafejka internetowa", row++, Colors.Hint);
+
+            row += 2;
+            int menuTop = row;
+            _bottomRow = menuTop + Options.Length + 1;
+
+            WriteCentered("↑↓ wybierz    Enter zatwierdź    Esc wyjście", _bottomRow, Colors.Hint);
+
+            var menu = new MenuArrow(Options.Select(o => o.Text), -1, menuTop);
+            int? selected = menu.Show();
+
+            // Esc traktujemy jako wyjście z programu
+            return selected is null ? MainMenuChoice.Exit : Options[selected.Value].Choice;
+        }
+
+        public void ShowMessage(string text)
+        {
+            int messageRow = _bottomRow + 2;
+            WriteCentered(text, messageRow, Colors.Warning);
+            WriteCentered("Naciśnij dowolny klawisz...", messageRow + 1, Colors.Hint);
+            Console.ReadKey(true);
+        }
+
+        private static void WriteCentered(string text, int row, ConsoleColor color)
+        {
+            int left = Math.Max(0, (Console.WindowWidth - text.Length) / 2);
+            Console.SetCursorPosition(left, row);
+            Console.ForegroundColor = color;
+            Console.Write(text);
+            Console.ResetColor();
+        }
     }
 }
