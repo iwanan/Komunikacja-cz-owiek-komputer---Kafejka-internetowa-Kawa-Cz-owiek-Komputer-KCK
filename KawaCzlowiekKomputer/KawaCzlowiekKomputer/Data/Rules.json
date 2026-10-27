@@ -1,3 +1,32 @@
 [
-    
+  {
+    "Id": 1,
+    "Title": "Czas sesji",
+    "Content": "Stanowisko wynajmujesz na pełne godziny. Po upływie opłaconego czasu sesja kończy się automatycznie, więc zapisz swoją pracę wcześniej."
+  },
+  {
+    "Id": 2,
+    "Title": "Rezerwacje",
+    "Content": "Zarezerwowane stanowisko czeka na Ciebie 15 minut od umówionej godziny. Po tym czasie rezerwacja wygasa i stanowisko wraca do puli wolnych."
+  },
+  {
+    "Id": 3,
+    "Title": "Jedzenie i napoje",
+    "Content": "Napoje z naszego menu możesz pić przy stanowisku. Posiłki jemy w strefie kawiarni, a przy komputerach prosimy o zachowanie czystości."
+  },
+  {
+    "Id": 4,
+    "Title": "Sprzęt i oprogramowanie",
+    "Content": "Nie wolno instalować własnego oprogramowania ani zmieniać ustawień systemu. O usterkach informuj obsługę, nie próbuj naprawiać ich samodzielnie."
+  },
+  {
+    "Id": 5,
+    "Title": "Zachowanie",
+    "Content": "Szanujemy innych gości. Gramy i rozmawiamy tak, aby nie przeszkadzać sąsiednim stanowiskom, a głośne dźwięki odtwarzamy w słuchawkach."
+  },
+  {
+    "Id": 6,
+    "Title": "Odpowiedzialność",
+    "Content": "Za uszkodzenia sprzętu spowodowane celowo lub przez nieuwagę odpowiada klient. Kawiarnia nie odpowiada za dane zostawione na komputerach."
+  }
 ]
