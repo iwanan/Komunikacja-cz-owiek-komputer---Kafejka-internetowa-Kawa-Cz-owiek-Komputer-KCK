@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KawaCzlowiekKomputer.Models
+﻿namespace KawaCzlowiekKomputer.Models
 {
-   public class Reservation : IHasId
+    public class Reservation : IHasId
     {
         public int Id { get; set; }
+        public int ClientId { get; set; }
+        public int StationId { get; set; }
+        public DateTime Start { get; set; }
+        public int Hours { get; set; }
     }
 }

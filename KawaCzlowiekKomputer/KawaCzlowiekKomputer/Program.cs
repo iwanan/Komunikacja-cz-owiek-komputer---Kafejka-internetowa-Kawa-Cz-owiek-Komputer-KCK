@@ -14,27 +14,31 @@ namespace KawaCzlowiekKomputer
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
 
-                       // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
+                        // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
             IViewClientMenu clientMenu = new ScreenClientMenu();
             IViewRules viewRules = new ScreenRules();
             IViewStations viewStations = new ScreenStations();
+            IViewReservation viewReservation = new ScreenReservation();
             IViewLogin viewLogin = new ScreenLogin();
             IViewRegistration viewRegistration = new ScreenRegistration();
 
             // dane i logika
             IRepo<Rules> rulesRepo = new JsonRepo<Rules>("Rules.json");
             IRepo<Station> stationsRepo = new JsonRepo<Station>("Stations.json");
+            IRepo<Reservation> reservationsRepo = new JsonRepo<Reservation>("Reservations.json");
             IRepo<Client> clientsRepo = new JsonRepo<Client>("Users.json");
             IRepo<Employee> employeesRepo = new JsonRepo<Employee>("Employees.json");
 
             var cafe = new CafeService(rulesRepo);
-            var stationService = new StationService(stationsRepo);
+            var reservationService = new ReservationService(reservationsRepo);
+            var stationService = new StationService(stationsRepo, reservationService);
             var authService = new AuthService(clientsRepo, employeesRepo);
 
             var client = new ClientController(cafe, stationService, viewRules, viewStations);
+            var reservation = new ReservationController(reservationService, stationService, viewReservation);
             var auth = new AuthController(authService, viewLogin, viewRegistration);
-            var navigation = new NavigationController(mainMenu, clientMenu, client, auth);
+            var navigation = new NavigationController(mainMenu, clientMenu, client, reservation, auth);
             navigation.Run();
             Console.ResetColor();
             ConsoleHelper.TryClear();
