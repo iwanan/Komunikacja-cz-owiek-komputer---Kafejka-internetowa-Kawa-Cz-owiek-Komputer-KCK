@@ -1,0 +1,6 @@
+[
+  { "Id": 1, "Name": "Karnet 5h", "Hours": 5, "ValidDays": 30, "Price": 35.00 },
+  { "Id": 2, "Name": "Karnet 10h", "Hours": 10, "ValidDays": 60, "Price": 65.00 },
+  { "Id": 3, "Name": "Karnet 25h", "Hours": 25, "ValidDays": 90, "Price": 150.00 },
+  { "Id": 4, "Name": "Karnet Gaming 10h", "Hours": 10, "ValidDays": 60, "Price": 100.00 }
+]

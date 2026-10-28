@@ -7,9 +7,10 @@ namespace KawaCzlowiekKomputer.Views.Components
     {
         // tabela w ramce, zwraca indeks wybranego wiersza albo null po Esc
         // canPick pozwala zablokować wybór niektórych wierszy (np. zajętych)
+        // readOnly = tylko przeglądanie, Enter nic nie robi
         public static int? FromTable(string title, string[] headers, List<string[]> rows,
             Func<int, ConsoleColor>? rowColor = null, Func<int, bool>? canPick = null,
-            string? hint = null, string enterAction = "Wybierz")
+            string? hint = null, string enterAction = "Wybierz", bool readOnly = false)
         {
             int selected = 0;
 
@@ -31,7 +32,11 @@ namespace KawaCzlowiekKomputer.Views.Components
                 // statyczne elementy rysujemy raz
                 Border.Draw(left, top, width, rows.Count + 6, title: title);
                 if (hint is not null) WriteAt(left + 3, top + 1, hint, Colors.Accent);
-                new Legend(("[↑/↓]", "Wybór"), ("[Enter]", enterAction), ("[Esc]", "Wróć")).Draw();
+
+                if (readOnly)
+                    new Legend(("[↑/↓]", "Przewijanie"), ("[Esc]", "Wróć")).Draw();
+                else
+                    new Legend(("[↑/↓]", "Wybór"), ("[Enter]", enterAction), ("[Esc]", "Wróć")).Draw();
 
                 while (true)
                 {
@@ -44,6 +49,7 @@ namespace KawaCzlowiekKomputer.Views.Components
                     }
 
                     if (result is null) return null;
+                    if (readOnly) continue; // Enter w trybie podglądu nic nie robi
                     if (canPick is null || canPick(result.Value)) return result;
 
                     // wiersz zablokowany, czekamy dalej

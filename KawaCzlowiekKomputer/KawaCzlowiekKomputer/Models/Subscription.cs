@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KawaCzlowiekKomputer.Models
+﻿namespace KawaCzlowiekKomputer.Models
 {
-   public class Subscription  : IHasId
+    public class Subscription : IHasId
     {
         public int Id { get; set; }
-    
+        public string Name { get; set; } = string.Empty;
+        public int Hours { get; set; }
+        public int ValidDays { get; set; }
+        public decimal Price { get; set; }
     }
 }

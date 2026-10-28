@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using KawaCzlowiekKomputer.Models;
 
 namespace KawaCzlowiekKomputer.Views
 {
-   public interface IViewSubs
+    public interface IViewSubs
     {
+        // pokazuje karnety i wraca po naciśnięciu Esc
+        void Show(List<Subscription> subscriptions);
     }
 }

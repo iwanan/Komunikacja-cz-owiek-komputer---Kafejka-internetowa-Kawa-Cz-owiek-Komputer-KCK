@@ -1,3 +1,10 @@
 [
-    
+  { "Id": 1, "Title": "Counter-Strike 2", "Genre": "Strzelanka", "Pegi": 18, "AvailableOn": "Gaming, VIP" },
+  { "Id": 2, "Title": "Valorant", "Genre": "Strzelanka", "Pegi": 16, "AvailableOn": "Gaming, VIP" },
+  { "Id": 3, "Title": "Fortnite", "Genre": "Battle royale", "Pegi": 12, "AvailableOn": "Gaming, VIP" },
+  { "Id": 4, "Title": "League of Legends", "Genre": "MOBA", "Pegi": 12, "AvailableOn": "Standard, Gaming, VIP" },
+  { "Id": 5, "Title": "Dota 2", "Genre": "MOBA", "Pegi": 12, "AvailableOn": "Gaming, VIP" },
+  { "Id": 6, "Title": "Minecraft", "Genre": "Sandbox", "Pegi": 7, "AvailableOn": "Standard, Gaming, VIP" },
+  { "Id": 7, "Title": "Rocket League", "Genre": "Sportowa", "Pegi": 3, "AvailableOn": "Gaming, VIP" },
+  { "Id": 8, "Title": "Cyberpunk 2077", "Genre": "RPG", "Pegi": 18, "AvailableOn": "VIP" }
 ]

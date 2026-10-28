@@ -72,6 +72,18 @@ namespace KawaCzlowiekKomputer.Controllers
                     case ClientMenuChoice.Reservations:
                         _reservation.Run(_auth.CurrentClient!);
                         break;
+                        
+                    case ClientMenuChoice.Prices:
+                        _client.ShowPrices();
+                        break;
+
+                    case ClientMenuChoice.Subscriptions:
+                        _client.ShowSubscriptions();
+                        break;
+
+                    case ClientMenuChoice.Games:
+                        _client.ShowGames();
+                        break;    
 
                     case ClientMenuChoice.Rules:
                         _client.ShowRules();

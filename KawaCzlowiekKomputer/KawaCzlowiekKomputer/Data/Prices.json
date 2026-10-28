@@ -1,0 +1,5 @@
+[
+  { "Id": 1, "Name": "Standard", "PricePerHour": 8.00, "Description": "Praca, nauka, internet" },
+  { "Id": 2, "Name": "Gaming", "PricePerHour": 12.00, "Description": "Mocny sprzęt do gier" },
+  { "Id": 3, "Name": "VIP", "PricePerHour": 18.00, "Description": "Najmocniejszy sprzęt, strefa ciszy" }
+]
