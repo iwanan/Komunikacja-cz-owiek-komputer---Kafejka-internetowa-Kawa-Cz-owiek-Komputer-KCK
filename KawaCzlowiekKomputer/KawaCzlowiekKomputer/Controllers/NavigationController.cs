@@ -72,7 +72,7 @@ namespace KawaCzlowiekKomputer.Controllers
                     case ClientMenuChoice.Reservations:
                         _reservation.Run(_auth.CurrentClient!);
                         break;
-                        
+
                     case ClientMenuChoice.Prices:
                         _client.ShowPrices();
                         break;
@@ -82,8 +82,12 @@ namespace KawaCzlowiekKomputer.Controllers
                         break;
 
                     case ClientMenuChoice.Games:
-                        _client.ShowGames();
-                        break;    
+                            _client.ShowGames(_auth.CurrentClient!);
+                        break;  
+                        
+                    case ClientMenuChoice.CafeMenu:
+                        _client.ShowMenu(_auth.CurrentClient!);
+                        break;        
 
                     case ClientMenuChoice.Rules:
                         _client.ShowRules();

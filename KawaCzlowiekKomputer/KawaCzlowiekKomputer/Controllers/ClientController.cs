@@ -1,4 +1,5 @@
-﻿using KawaCzlowiekKomputer.Services;
+﻿using KawaCzlowiekKomputer.Models;
+using KawaCzlowiekKomputer.Services;
 using KawaCzlowiekKomputer.Views;
 
 namespace KawaCzlowiekKomputer.Controllers
@@ -13,10 +14,12 @@ namespace KawaCzlowiekKomputer.Controllers
         private readonly IViewPrices _viewPrices;
         private readonly IViewSubs _viewSubs;
         private readonly IViewGames _viewGames;
+        private readonly IViewMenu _viewMenu;
 
         public ClientController(CafeService cafe, StationService stationService, SubService subService,
                                 IViewRules viewRules, IViewStations viewStations,
-                                IViewPrices viewPrices, IViewSubs viewSubs, IViewGames viewGames)
+                                IViewPrices viewPrices, IViewSubs viewSubs, IViewGames viewGames,
+                                IViewMenu viewMenu)
         {
             _cafe = cafe;
             _stationService = stationService;
@@ -26,6 +29,7 @@ namespace KawaCzlowiekKomputer.Controllers
             _viewPrices = viewPrices;
             _viewSubs = viewSubs;
             _viewGames = viewGames;
+            _viewMenu = viewMenu;
         }
 
         // pobiera punkty z serwisu i przekazuje je widokowi
@@ -38,6 +42,10 @@ namespace KawaCzlowiekKomputer.Controllers
 
         public void ShowSubscriptions() => _viewSubs.Show(_subService.GetSubscriptions());
 
-        public void ShowGames() => _viewGames.Show(_cafe.GetGames());
+        // dostępność gier zależy od wieku zalogowanego klienta
+        public void ShowGames(Client client) => _viewGames.Show(_cafe.GetGames(client));
+
+        // dostępność pozycji 18+ zależy od wieku zalogowanego klienta
+        public void ShowMenu(Client client) => _viewMenu.Show(_cafe.GetMenu(client));
     }
 }

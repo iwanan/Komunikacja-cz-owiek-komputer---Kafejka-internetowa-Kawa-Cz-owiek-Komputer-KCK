@@ -1,3 +1,14 @@
 [
-    
+  { "Id": 1, "Name": "Espresso", "Category": "Kawa", "Price": 8.00, "AgeRestricted": false },
+  { "Id": 2, "Name": "Cappuccino", "Category": "Kawa", "Price": 12.00, "AgeRestricted": false },
+  { "Id": 3, "Name": "Latte", "Category": "Kawa", "Price": 13.00, "AgeRestricted": false },
+  { "Id": 4, "Name": "Herbata", "Category": "Napoje", "Price": 8.00, "AgeRestricted": false },
+  { "Id": 5, "Name": "Cola 0,33 l", "Category": "Napoje", "Price": 7.00, "AgeRestricted": false },
+  { "Id": 6, "Name": "Energy drink", "Category": "Napoje", "Price": 10.00, "AgeRestricted": false },
+  { "Id": 7, "Name": "Piwo jasne 0,5 l", "Category": "Alkohol", "Price": 14.00, "AgeRestricted": true },
+  { "Id": 8, "Name": "Piwo ciemne 0,5 l", "Category": "Alkohol", "Price": 15.00, "AgeRestricted": true },
+  { "Id": 9, "Name": "Wino czerwone (lampka)", "Category": "Alkohol", "Price": 16.00, "AgeRestricted": true },
+  { "Id": 10, "Name": "Tosty", "Category": "Przekąski", "Price": 12.00, "AgeRestricted": false },
+  { "Id": 11, "Name": "Nachos", "Category": "Przekąski", "Price": 14.00, "AgeRestricted": false },
+  { "Id": 12, "Name": "Frytki", "Category": "Przekąski", "Price": 10.00, "AgeRestricted": false }
 ]

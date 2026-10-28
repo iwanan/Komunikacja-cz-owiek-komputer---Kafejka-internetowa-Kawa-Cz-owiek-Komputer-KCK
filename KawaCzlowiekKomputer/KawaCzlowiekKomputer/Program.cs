@@ -14,7 +14,7 @@ namespace KawaCzlowiekKomputer
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
 
-                             // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
+                                        // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
             IViewClientMenu clientMenu = new ScreenClientMenu();
             IViewRules viewRules = new ScreenRules();
@@ -23,6 +23,7 @@ namespace KawaCzlowiekKomputer
             IViewPrices viewPrices = new ScreenPrices();
             IViewSubs viewSubs = new ScreenSubs();
             IViewGames viewGames = new ScreenGames();
+            IViewMenu viewMenu = new ScreenMenu();
             IViewLogin viewLogin = new ScreenLogin();
             IViewRegistration viewRegistration = new ScreenRegistration();
 
@@ -31,19 +32,20 @@ namespace KawaCzlowiekKomputer
             IRepo<PriceListing> pricesRepo = new JsonRepo<PriceListing>("Prices.json");
             IRepo<Subscription> subsRepo = new JsonRepo<Subscription>("Subscriptions.json");
             IRepo<Game> gamesRepo = new JsonRepo<Game>("Games.json");
+            IRepo<MenuItem> menuRepo = new JsonRepo<MenuItem>("Menu.json");
             IRepo<Station> stationsRepo = new JsonRepo<Station>("Stations.json");
             IRepo<Reservation> reservationsRepo = new JsonRepo<Reservation>("Reservations.json");
             IRepo<Client> clientsRepo = new JsonRepo<Client>("Users.json");
             IRepo<Employee> employeesRepo = new JsonRepo<Employee>("Employees.json");
 
-            var cafe = new CafeService(rulesRepo, pricesRepo, gamesRepo);
+            var cafe = new CafeService(rulesRepo, pricesRepo, gamesRepo, menuRepo);
             var subService = new SubService(subsRepo);
             var reservationService = new ReservationService(reservationsRepo);
             var stationService = new StationService(stationsRepo, reservationService);
             var authService = new AuthService(clientsRepo, employeesRepo);
 
             var client = new ClientController(cafe, stationService, subService, viewRules, viewStations,
-                                              viewPrices, viewSubs, viewGames);
+                                              viewPrices, viewSubs, viewGames, viewMenu);
             var reservation = new ReservationController(reservationService, stationService, viewReservation);
             var auth = new AuthController(authService, viewLogin, viewRegistration);
             var navigation = new NavigationController(mainMenu, clientMenu, client, reservation, auth);

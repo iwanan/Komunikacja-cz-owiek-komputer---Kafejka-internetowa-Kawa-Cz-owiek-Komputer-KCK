@@ -5,6 +5,6 @@ namespace KawaCzlowiekKomputer.Views
     public interface IViewGames
     {
         // pokazuje listę gier i wraca po naciśnięciu Esc
-        void Show(List<Game> games);
+        void Show(List<Offer<Game>> games);
     }
 }
