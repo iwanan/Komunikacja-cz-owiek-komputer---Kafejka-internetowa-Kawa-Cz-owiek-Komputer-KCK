@@ -1,3 +1,10 @@
 [
-    
+  { "Id": 1, "Name": "PC-01", "Type": "Standard", "Cpu": "Intel Core i3-12100", "Gpu": "Zintegrowana UHD 730", "Ram": "16 GB", "IsOccupied": false },
+  { "Id": 2, "Name": "PC-02", "Type": "Standard", "Cpu": "Intel Core i3-12100", "Gpu": "Zintegrowana UHD 730", "Ram": "16 GB", "IsOccupied": true },
+  { "Id": 3, "Name": "PC-03", "Type": "Standard", "Cpu": "Intel Core i5-12400", "Gpu": "Zintegrowana UHD 730", "Ram": "16 GB", "IsOccupied": false },
+  { "Id": 4, "Name": "PC-04", "Type": "Standard", "Cpu": "Intel Core i5-12400", "Gpu": "Zintegrowana UHD 730", "Ram": "16 GB", "IsOccupied": false },
+  { "Id": 5, "Name": "GAME-01", "Type": "Gaming", "Cpu": "AMD Ryzen 5 7600", "Gpu": "NVIDIA RTX 4060", "Ram": "32 GB", "IsOccupied": true },
+  { "Id": 6, "Name": "GAME-02", "Type": "Gaming", "Cpu": "AMD Ryzen 5 7600", "Gpu": "NVIDIA RTX 4060", "Ram": "32 GB", "IsOccupied": false },
+  { "Id": 7, "Name": "GAME-03", "Type": "Gaming", "Cpu": "AMD Ryzen 7 7700", "Gpu": "NVIDIA RTX 4070", "Ram": "32 GB", "IsOccupied": false },
+  { "Id": 8, "Name": "VIP-01", "Type": "VIP", "Cpu": "AMD Ryzen 9 7900X", "Gpu": "NVIDIA RTX 4080", "Ram": "64 GB", "IsOccupied": true }
 ]

@@ -61,7 +61,9 @@ namespace KawaCzlowiekKomputer.Controllers
                         _auth.Logout();
                         inMenu = false;
                         break;
-
+                    case ClientMenuChoice.Stations:
+                        _client.ShowStations();
+                        break;
                     case ClientMenuChoice.Rules:
                         _client.ShowRules();
                         break;

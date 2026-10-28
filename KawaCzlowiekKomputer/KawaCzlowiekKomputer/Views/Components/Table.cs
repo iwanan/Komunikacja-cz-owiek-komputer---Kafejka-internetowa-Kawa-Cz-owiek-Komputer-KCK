@@ -2,8 +2,8 @@
 
 namespace KawaCzlowiekKomputer.Views.Components
 {
-    /// Tabela z wyrównanymi kolumnami, sterowana strzałkami.
-    /// Przy ruchu przerysowuje tylko dwa wiersze, bez Console.Clear().
+    // tabela z wyrównanymi kolumnami sterowana strzałkami,
+    // przy ruchu przerysowuje tylko dwa wiersze, bez Console.Clear()
     public class Table
     {
         private readonly string[] _headers;
@@ -16,12 +16,23 @@ namespace KawaCzlowiekKomputer.Views.Components
         // kolor tekstu wiersza o danym indeksie (np. zielony = wolne, czerwony = zajęte)
         public Func<int, ConsoleColor>? RowColor { get; set; }
 
-        // Szerokość tabeli w znakach
+        // wywoływane po zmianie zaznaczonego wiersza strzałkami
+        public Action<int>? SelectionChanged { get; set; }
+
+        // true, gdy Show() przerwano z powodu zmiany rozmiaru okna
+        public bool Resized { get; private set; }
+
+        // aktualnie zaznaczony wiersz
+        public int Selected => _selected;
+
+        // kolumna lewej krawędzi po wyśrodkowaniu
+        public int Left => _left;
+
+        // szerokość tabeli w znakach
         public int Width => _widths.Sum() + 3 * (_widths.Length - 1) + 2;
 
-        // kolumna lewej krawędzi; wartość ujemna = wyśrodkuj
-        // wiersz nagłówka. Dane zaczynają się dwa wiersze niżej
-        public Table(IEnumerable<string> headers, IEnumerable<string[]> rows, int left, int top)
+        // left ujemne = wyśrodkuj, top to wiersz nagłówka (dane zaczynają się dwa wiersze niżej)
+        public Table(IEnumerable<string> headers, IEnumerable<string[]> rows, int left, int top, int selected = 0)
         {
             _headers = headers.ToArray();
             _rows = rows.ToList();
@@ -36,18 +47,27 @@ namespace KawaCzlowiekKomputer.Views.Components
             }
 
             _left = left < 0 ? Math.Max(0, (ConsoleHelper.WindowWidth - Width) / 2) : left;
+            _selected = Math.Clamp(selected, 0, Math.Max(0, _rows.Count - 1)); // zachowuje wybór po przerysowaniu
         }
 
-        // Rysuje tabelę, czeka na wybór. Zwraca indeks wiersza albo null po Esc
+        // rysuje tabelę i czeka na wybór, zwraca indeks wiersza albo null po Esc lub zmianie rozmiaru
         public int? Show()
         {
+            Resized = false;
+
             DrawHeader();
             for (int i = 0; i < _rows.Count; i++)
                 DrawRow(i);
 
             while (true)
             {
-                switch (Console.ReadKey(true).Key)
+                if (!ConsoleHelper.WaitForKey(out ConsoleKeyInfo key))
+                {
+                    Resized = true;
+                    return null;
+                }
+
+                switch (key.Key)
                 {
                     case ConsoleKey.UpArrow when _rows.Count > 0:
                         MoveTo((_selected - 1 + _rows.Count) % _rows.Count);
@@ -74,7 +94,7 @@ namespace KawaCzlowiekKomputer.Views.Components
             }
         }
 
-        // podmienia dane jednego wiersza i przerysowuje tylko jego.</summary>
+        // podmienia dane jednego wiersza i przerysowuje tylko jego
         public void UpdateRow(int index, string[] cells)
         {
             _rows[index] = cells;
@@ -89,6 +109,7 @@ namespace KawaCzlowiekKomputer.Views.Components
             _selected = newIndex;
             DrawRow(old);       // zdejmij podświetlenie
             DrawRow(_selected); // załóż podświetlenie
+            SelectionChanged?.Invoke(_selected);
         }
 
         private void DrawHeader()
