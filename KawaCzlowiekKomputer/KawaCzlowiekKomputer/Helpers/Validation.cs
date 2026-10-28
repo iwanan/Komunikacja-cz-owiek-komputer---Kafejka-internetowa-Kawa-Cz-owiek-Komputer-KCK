@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace KawaCzlowiekKomputer.Helpers
 {
@@ -20,6 +21,19 @@ namespace KawaCzlowiekKomputer.Helpers
         {
             if (!EmailPattern.IsMatch(email))
                 return "Podaj poprawny adres e-mail.";
+            return null;
+        }
+
+        // data w formacie RRRR-MM-DD, nie z przyszłości i nie starsza niż 120 lat
+        public static string? ValidateBirthDate(string text, out DateTime date)
+        {
+            if (!DateTime.TryParseExact(text.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                                        DateTimeStyles.None, out date))
+                return "Podaj datę urodzenia w formacie RRRR-MM-DD.";
+            if (date > DateTime.Today)
+                return "Data urodzenia nie może być z przyszłości.";
+            if (date < DateTime.Today.AddYears(-120))
+                return "Podaj prawdziwą datę urodzenia.";
             return null;
         }
 

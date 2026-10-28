@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace KawaCzlowiekKomputer.Models
+﻿namespace KawaCzlowiekKomputer.Models
 {
     public class Client : User
     {
-
+        public DateTime DateOfBirth { get; set; }
     }
 }

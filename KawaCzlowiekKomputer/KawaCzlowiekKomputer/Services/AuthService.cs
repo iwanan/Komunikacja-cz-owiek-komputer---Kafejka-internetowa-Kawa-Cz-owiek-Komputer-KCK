@@ -16,21 +16,23 @@ namespace KawaCzlowiekKomputer.Services
             SeedEmployee();
         }
 
-        // rejestracja klienta: walidacja, unikalność loginu, hash hasła
-        public (bool Success, string Message) Register(string login, string email, string password)
+                // rejestracja klienta: walidacja, unikalność loginu, hash hasła
+        public (bool Success, string Message) Register(string login, string email, string birthDate, string password)
         {
             login = login.Trim();
             email = email.Trim();
 
+            DateTime date = default;
             string? error = Validation.ValidateLogin(login)
                             ?? Validation.ValidateEmail(email)
+                            ?? Validation.ValidateBirthDate(birthDate, out date)
                             ?? Validation.ValidatePassword(password);
             if (error is not null) return (false, error);
 
             if (LoginTaken(login)) return (false, "Ten login jest już zajęty.");
 
             var (hash, salt) = PasswordHelper.CreateHash(password);
-            _clients.Add(new Client { Login = login, Email = email, PasswordHash = hash, Salt = salt });
+            _clients.Add(new Client { Login = login, Email = email, DateOfBirth = date, PasswordHash = hash, Salt = salt });
             return (true, "Konto zostało utworzone.");
         }
 

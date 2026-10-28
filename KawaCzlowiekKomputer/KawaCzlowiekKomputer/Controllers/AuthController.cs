@@ -71,14 +71,16 @@ namespace KawaCzlowiekKomputer.Controllers
             string? error = null;
             string login = "";
             string email = "";
+            string birthDate = "";
 
             while (true)
             {
-                var data = _viewRegistration.Show(error, login, email);
+                var data = _viewRegistration.Show(error, login, email, birthDate);
                 if (data is null) return;
 
                 login = data.Value.Login;
                 email = data.Value.Email;
+                birthDate = data.Value.BirthDate;
 
                 if (data.Value.Password != data.Value.Confirm)
                 {
@@ -86,7 +88,7 @@ namespace KawaCzlowiekKomputer.Controllers
                     continue;
                 }
 
-                var (success, message) = _auth.Register(login, email, data.Value.Password);
+                var (success, message) = _auth.Register(login, email, birthDate, data.Value.Password);
                 if (success)
                 {
                     _viewRegistration.ShowMessage(message, true);
