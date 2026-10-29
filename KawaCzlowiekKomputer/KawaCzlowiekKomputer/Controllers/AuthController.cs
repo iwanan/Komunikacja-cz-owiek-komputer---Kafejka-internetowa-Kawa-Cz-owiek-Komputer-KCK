@@ -13,6 +13,9 @@ namespace KawaCzlowiekKomputer.Controllers
         // zalogowany klient, null gdy nikt nie jest zalogowany
         public Client? CurrentClient { get; private set; }
 
+        // zalogowany pracownik, null gdy nikt nie jest zalogowany
+        public Employee? CurrentEmployee { get; private set; }
+
         public AuthController(AuthService auth, IViewLogin viewLogin, IViewRegistration viewRegistration)
         {
             _auth = auth;
@@ -57,8 +60,7 @@ namespace KawaCzlowiekKomputer.Controllers
                 Employee? employee = _auth.LoginEmployee(login, data.Value.Password);
                 if (employee is not null)
                 {
-                    // panel pracownika dojdzie w kolejnych krokach
-                    _viewLogin.ShowMessage($"Zalogowano jako pracownik {employee.Login}. Panel pracownika będzie dostępny wkrótce.", true);
+                    CurrentEmployee = employee;
                     return true;
                 }
 
@@ -99,6 +101,10 @@ namespace KawaCzlowiekKomputer.Controllers
             }
         }
 
-        public void Logout() => CurrentClient = null;
+        public void Logout()
+        {
+            CurrentClient = null;
+            CurrentEmployee = null;
+        }
     }
 }

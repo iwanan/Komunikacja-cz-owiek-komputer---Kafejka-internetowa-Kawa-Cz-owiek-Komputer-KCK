@@ -14,9 +14,10 @@ namespace KawaCzlowiekKomputer
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
 
-                                                    // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
+                                                               // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
             IViewClientMenu clientMenu = new ScreenClientMenu();
+            IViewEmployeeMenu employeeMenu = new ScreenEmployeeMenu();
             IViewRules viewRules = new ScreenRules();
             IViewStations viewStations = new ScreenStations();
             IViewReservation viewReservation = new ScreenReservation();
@@ -27,6 +28,8 @@ namespace KawaCzlowiekKomputer
             IViewAccount viewAccount = new ScreenAccount();
             IViewLogin viewLogin = new ScreenLogin();
             IViewRegistration viewRegistration = new ScreenRegistration();
+            IViewEditStations viewEditStations = new ScreenEditStations();
+            IViewEditReservation viewEditReservation = new ScreenEditReservation();
 
             // dane i logika
             IRepo<Rules> rulesRepo = new JsonRepo<Rules>("Rules.json");
@@ -52,8 +55,11 @@ namespace KawaCzlowiekKomputer
             var reservation = new ReservationController(reservationService, stationService, viewReservation);
             var account = new AccountController(authService, reservationService, stationService,
                                                 purchaseService, viewAccount);
+            var employee = new EmployeeController(authService, stationService, reservationService,
+                                                  viewEditStations, viewEditReservation);
             var auth = new AuthController(authService, viewLogin, viewRegistration);
-            var navigation = new NavigationController(mainMenu, clientMenu, client, reservation, account, auth);
+            var navigation = new NavigationController(mainMenu, clientMenu, employeeMenu, client, reservation,
+                                                      account, employee, auth);
             navigation.Run();
             Console.ResetColor();
             ConsoleHelper.TryClear();

@@ -66,6 +66,9 @@ namespace KawaCzlowiekKomputer.Services
             _clients.Update(client);
             return (true, "Hasło zostało zmienione.");
         }
+                // loginy klientów po Id, do list widzianych przez pracownika
+        public Dictionary<int, string> GetClientNames() =>
+            _clients.GetAll().ToDictionary(c => c.Id, c => c.Login);
 
         private bool LoginTaken(string login) =>
             _clients.GetAll().Any(c => SameLogin(c.Login, login)) ||

@@ -6,20 +6,26 @@ namespace KawaCzlowiekKomputer.Controllers
     {
         private readonly IViewMainMenu _mainMenu;
         private readonly IViewClientMenu _clientMenu;
+        private readonly IViewEmployeeMenu _employeeMenu;
         private readonly ClientController _client;
         private readonly ReservationController _reservation;
         private readonly AccountController _account;
+        private readonly EmployeeController _employee;
         private readonly AuthController _auth;
 
         public NavigationController(IViewMainMenu mainMenu, IViewClientMenu clientMenu,
+                                    IViewEmployeeMenu employeeMenu,
                                     ClientController client, ReservationController reservation,
-                                    AccountController account, AuthController auth)
+                                    AccountController account, EmployeeController employee,
+                                    AuthController auth)
         {
             _mainMenu = mainMenu;
             _clientMenu = clientMenu;
+            _employeeMenu = employeeMenu;
             _client = client;
             _reservation = reservation;
             _account = account;
+            _employee = employee;
             _auth = auth;
         }
 
@@ -48,7 +54,7 @@ namespace KawaCzlowiekKomputer.Controllers
                         break;
 
                     case MainMenuChoice.EmployeeLogin:
-                        _auth.LoginEmployee();
+                        if (_auth.LoginEmployee()) RunEmployeeMenu();
                         break;
                 }
             }
@@ -97,6 +103,35 @@ namespace KawaCzlowiekKomputer.Controllers
 
                     case ClientMenuChoice.Rules:
                         _client.ShowRules();
+                        break;
+                }
+            }
+        }
+
+        // menu zalogowanego pracownika, kończy się wylogowaniem
+        private void RunEmployeeMenu()
+        {
+            bool inMenu = true;
+            while (inMenu)
+            {
+                switch (_employeeMenu.Show(_auth.CurrentEmployee!.Login))
+                {
+                    case EmployeeMenuChoice.Logout:
+                        _auth.Logout();
+                        inMenu = false;
+                        break;
+
+                    case EmployeeMenuChoice.Stations:
+                        _employee.ManageStations();
+                        break;
+
+                    case EmployeeMenuChoice.Reservations:
+                        _employee.ManageReservations();
+                        break;
+
+                    default:
+                        // menu, cennik i karnety dojdą w paczce B
+                        _employeeMenu.ShowMessage("Ta funkcja będzie dostępna wkrótce.");
                         break;
                 }
             }

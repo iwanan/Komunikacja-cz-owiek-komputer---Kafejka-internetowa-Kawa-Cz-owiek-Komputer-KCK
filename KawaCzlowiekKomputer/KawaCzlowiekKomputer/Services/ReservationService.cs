@@ -55,7 +55,7 @@ namespace KawaCzlowiekKomputer.Services
                 .OrderBy(r => r.Start)
                 .ToList();
                 // wszystkie rezerwacje klienta, także minione, od najnowszych
-                
+
         public List<Reservation> GetHistory(int clientId) =>
             _reservations.GetAll()
                 .Where(r => r.ClientId == clientId)
@@ -71,6 +71,25 @@ namespace KawaCzlowiekKomputer.Services
             _reservations.Delete(reservationId);
             return true;
         }
+                // wszystkie nadchodzące i trwające rezerwacje, od najbliższej
+        public List<Reservation> GetUpcoming() =>
+            _reservations.GetAll()
+                .Where(r => r.Start.AddHours(r.Hours) > DateTime.Now)
+                .OrderBy(r => r.Start)
+                .ToList();
+
+        // anulowanie przez pracownika, bez sprawdzania właściciela
+        public bool CancelAsEmployee(int reservationId)
+        {
+            if (_reservations.GetById(reservationId) is null) return false;
+
+            _reservations.Delete(reservationId);
+            return true;
+        }
+
+        // czy stanowisko ma nadchodzące lub trwające rezerwacje
+        public bool HasUpcoming(int stationId) =>
+            _reservations.GetAll().Any(r => r.StationId == stationId && r.Start.AddHours(r.Hours) > DateTime.Now);
 
         // czy stanowisko jest zarezerwowane w tej chwili
         public bool IsReservedNow(int stationId)
