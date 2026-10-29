@@ -46,6 +46,9 @@ namespace KawaCzlowiekKomputer.Services
                 .ToList();
         }
 
+                // czy klient ma co najmniej 18 lat
+        public static bool IsAdult(DateTime birthDate) => GetAge(birthDate) >= AdultAge;
+
         // menu w kolejności Id, pozycje 18+ niedostępne dla niepełnoletnich
         public List<Offer<MenuItem>> GetMenu(Client client)
         {

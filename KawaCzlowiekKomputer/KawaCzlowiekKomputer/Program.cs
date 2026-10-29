@@ -14,7 +14,7 @@ namespace KawaCzlowiekKomputer
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
 
-                                        // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
+                                                    // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
             IViewClientMenu clientMenu = new ScreenClientMenu();
             IViewRules viewRules = new ScreenRules();
@@ -24,6 +24,7 @@ namespace KawaCzlowiekKomputer
             IViewSubs viewSubs = new ScreenSubs();
             IViewGames viewGames = new ScreenGames();
             IViewMenu viewMenu = new ScreenMenu();
+            IViewAccount viewAccount = new ScreenAccount();
             IViewLogin viewLogin = new ScreenLogin();
             IViewRegistration viewRegistration = new ScreenRegistration();
 
@@ -35,20 +36,24 @@ namespace KawaCzlowiekKomputer
             IRepo<MenuItem> menuRepo = new JsonRepo<MenuItem>("Menu.json");
             IRepo<Station> stationsRepo = new JsonRepo<Station>("Stations.json");
             IRepo<Reservation> reservationsRepo = new JsonRepo<Reservation>("Reservations.json");
+            IRepo<Purchase> purchasesRepo = new JsonRepo<Purchase>("Purchases.json");
             IRepo<Client> clientsRepo = new JsonRepo<Client>("Users.json");
             IRepo<Employee> employeesRepo = new JsonRepo<Employee>("Employees.json");
 
             var cafe = new CafeService(rulesRepo, pricesRepo, gamesRepo, menuRepo);
             var subService = new SubService(subsRepo);
+            var purchaseService = new PurchaseService(purchasesRepo);
             var reservationService = new ReservationService(reservationsRepo);
             var stationService = new StationService(stationsRepo, reservationService);
             var authService = new AuthService(clientsRepo, employeesRepo);
 
-            var client = new ClientController(cafe, stationService, subService, viewRules, viewStations,
-                                              viewPrices, viewSubs, viewGames, viewMenu);
+            var client = new ClientController(cafe, stationService, subService, purchaseService,
+                                              viewRules, viewStations, viewPrices, viewSubs, viewGames, viewMenu);
             var reservation = new ReservationController(reservationService, stationService, viewReservation);
+            var account = new AccountController(authService, reservationService, stationService,
+                                                purchaseService, viewAccount);
             var auth = new AuthController(authService, viewLogin, viewRegistration);
-            var navigation = new NavigationController(mainMenu, clientMenu, client, reservation, auth);
+            var navigation = new NavigationController(mainMenu, clientMenu, client, reservation, account, auth);
             navigation.Run();
             Console.ResetColor();
             ConsoleHelper.TryClear();

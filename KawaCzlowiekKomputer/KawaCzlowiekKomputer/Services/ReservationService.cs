@@ -54,6 +54,13 @@ namespace KawaCzlowiekKomputer.Services
                 .Where(r => r.ClientId == clientId && r.Start.AddHours(r.Hours) > DateTime.Now)
                 .OrderBy(r => r.Start)
                 .ToList();
+                // wszystkie rezerwacje klienta, także minione, od najnowszych
+                
+        public List<Reservation> GetHistory(int clientId) =>
+            _reservations.GetAll()
+                .Where(r => r.ClientId == clientId)
+                .OrderByDescending(r => r.Start)
+                .ToList();
 
         // klient może anulować tylko własną rezerwację
         public bool Cancel(int reservationId, int clientId)

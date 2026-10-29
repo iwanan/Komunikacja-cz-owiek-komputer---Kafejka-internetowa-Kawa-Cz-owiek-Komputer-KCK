@@ -8,16 +8,18 @@ namespace KawaCzlowiekKomputer.Controllers
         private readonly IViewClientMenu _clientMenu;
         private readonly ClientController _client;
         private readonly ReservationController _reservation;
+        private readonly AccountController _account;
         private readonly AuthController _auth;
 
         public NavigationController(IViewMainMenu mainMenu, IViewClientMenu clientMenu,
                                     ClientController client, ReservationController reservation,
-                                    AuthController auth)
+                                    AccountController account, AuthController auth)
         {
             _mainMenu = mainMenu;
             _clientMenu = clientMenu;
             _client = client;
             _reservation = reservation;
+            _account = account;
             _auth = auth;
         }
 
@@ -78,24 +80,23 @@ namespace KawaCzlowiekKomputer.Controllers
                         break;
 
                     case ClientMenuChoice.Subscriptions:
-                        _client.ShowSubscriptions();
+                        _client.ShowSubscriptions(_auth.CurrentClient!);
                         break;
 
                     case ClientMenuChoice.Games:
-                            _client.ShowGames(_auth.CurrentClient!);
-                        break;  
-                        
+                        _client.ShowGames(_auth.CurrentClient!);
+                        break;
+
                     case ClientMenuChoice.CafeMenu:
                         _client.ShowMenu(_auth.CurrentClient!);
-                        break;        
+                        break;
+
+                    case ClientMenuChoice.Account:
+                        _account.Run(_auth.CurrentClient!);
+                        break;
 
                     case ClientMenuChoice.Rules:
                         _client.ShowRules();
-                        break;
-
-                    default:
-                        // pozostałe funkcje dojdą w kolejnych krokach
-                        _clientMenu.ShowMessage("Ta funkcja będzie dostępna wkrótce.");
                         break;
                 }
             }

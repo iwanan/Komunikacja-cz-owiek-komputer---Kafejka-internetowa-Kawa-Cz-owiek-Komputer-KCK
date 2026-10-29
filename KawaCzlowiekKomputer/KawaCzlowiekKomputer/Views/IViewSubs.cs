@@ -4,7 +4,13 @@ namespace KawaCzlowiekKomputer.Views
 {
     public interface IViewSubs
     {
-        // pokazuje karnety i wraca po naciśnięciu Esc
-        void Show(List<Subscription> subscriptions);
+        // lista karnetów, zwraca indeks wybranego do kupienia albo null po Esc
+        int? Pick(List<Subscription> subscriptions);
+
+        // pytanie tak/nie
+        bool Confirm(string question);
+
+        // komunikat na całym ekranie
+        void ShowMessage(string text, bool success);
     }
 }

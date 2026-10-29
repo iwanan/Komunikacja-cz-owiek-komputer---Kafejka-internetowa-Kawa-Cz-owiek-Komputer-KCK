@@ -51,6 +51,21 @@ namespace KawaCzlowiekKomputer.Services
             return employee is not null && PasswordHelper.Verify(password, employee.PasswordHash, employee.Salt)
                 ? employee : null;
         }
+                // zmiana hasła klienta po sprawdzeniu obecnego
+        public (bool Success, string Message) ChangePassword(Client client, string oldPassword, string newPassword)
+        {
+            if (!PasswordHelper.Verify(oldPassword, client.PasswordHash, client.Salt))
+                return (false, "Obecne hasło jest nieprawidłowe.");
+
+            string? error = Validation.ValidatePassword(newPassword);
+            if (error is not null) return (false, error);
+
+            var (hash, salt) = PasswordHelper.CreateHash(newPassword);
+            client.PasswordHash = hash;
+            client.Salt = salt;
+            _clients.Update(client);
+            return (true, "Hasło zostało zmienione.");
+        }
 
         private bool LoginTaken(string login) =>
             _clients.GetAll().Any(c => SameLogin(c.Login, login)) ||

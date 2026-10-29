@@ -6,7 +6,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 {
     public class ScreenMenu : IViewMenu
     {
-        public void Show(List<Offer<MenuItem>> items)
+        public int? Pick(List<Offer<MenuItem>> items)
         {
             var rows = items
                 .Select(o => new[]
@@ -21,12 +21,18 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             string hint = rows.Count == 0
                 ? "Menu jest puste."
                 : items.Any(o => !o.IsAllowed)
-                    ? "Pozycje 18+ są niedostępne dla niepełnoletnich"
-                    : "Zamówienia przy barze";
+                    ? "Enter zamawia, szare pozycje 18+ są niedostępne"
+                    : "Enter zamawia wybraną pozycję";
 
-            Picker.FromTable("Menu kawiarni", new[] { "Pozycja", "Kategoria", "Cena", "Uwagi" }, rows,
-                             rowColor: i => items[i].IsAllowed ? Colors.Text : Colors.Hint,
-                             hint: hint, readOnly: true);
+            return Picker.FromTable("Menu kawiarni", new[] { "Pozycja", "Kategoria", "Cena", "Uwagi" }, rows,
+                                    rowColor: i => items[i].IsAllowed ? Colors.Text : Colors.Hint,
+                                    canPick: i => items[i].IsAllowed,
+                                    hint: hint, enterAction: "Zamów");
         }
+
+        public bool Confirm(string question) =>
+            Picker.FromMenu(question, null, new[] { "Tak", "Nie" }) == 0;
+
+        public void ShowMessage(string text, bool success) => MessageScreen.Show(text, success);
     }
 }

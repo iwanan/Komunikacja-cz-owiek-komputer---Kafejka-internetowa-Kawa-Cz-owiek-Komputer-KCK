@@ -4,7 +4,13 @@ namespace KawaCzlowiekKomputer.Views
 {
     public interface IViewMenu
     {
-        // pokazuje menu kawiarni i wraca po naciśnięciu Esc
-        void Show(List<Offer<MenuItem>> items);
+        // menu kawiarni, zwraca indeks wybranej pozycji do zamówienia albo null po Esc
+        int? Pick(List<Offer<MenuItem>> items);
+
+        // pytanie tak/nie
+        bool Confirm(string question);
+
+        // komunikat na całym ekranie
+        void ShowMessage(string text, bool success);
     }
 }
