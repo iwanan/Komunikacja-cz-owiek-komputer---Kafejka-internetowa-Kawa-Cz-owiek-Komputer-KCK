@@ -45,5 +45,24 @@ namespace KawaCzlowiekKomputer.Helpers
                 return "Hasło musi zawierać co najmniej jedną cyfrę.";
             return null;
         }
+
+        // cena jako liczba dodatnia, przecinek lub kropka, zaokrąglona do groszy
+        public static string? ValidatePrice(string text, out decimal price)
+        {
+            if (!decimal.TryParse(text.Trim().Replace(',', '.'), NumberStyles.Number,
+                                  CultureInfo.InvariantCulture, out price) || price <= 0 || price > 10000)
+                return "Podaj cenę jako liczbę większą od 0, np. 12,50.";
+
+            price = Math.Round(price, 2);
+            return null;
+        }
+
+        // liczba całkowita od 1 do 1000, label to nazwa pola w komunikacie
+        public static string? ValidatePositiveInt(string text, string label, out int value)
+        {
+            if (!int.TryParse(text.Trim(), out value) || value < 1 || value > 1000)
+                return $"{label} musi być liczbą od 1 do 1000.";
+            return null;
+        }
     }
 }

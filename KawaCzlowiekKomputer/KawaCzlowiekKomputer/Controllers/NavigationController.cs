@@ -11,13 +11,14 @@ namespace KawaCzlowiekKomputer.Controllers
         private readonly ReservationController _reservation;
         private readonly AccountController _account;
         private readonly EmployeeController _employee;
+        private readonly CatalogController _catalog;
         private readonly AuthController _auth;
 
         public NavigationController(IViewMainMenu mainMenu, IViewClientMenu clientMenu,
                                     IViewEmployeeMenu employeeMenu,
                                     ClientController client, ReservationController reservation,
                                     AccountController account, EmployeeController employee,
-                                    AuthController auth)
+                                    CatalogController catalog, AuthController auth)
         {
             _mainMenu = mainMenu;
             _clientMenu = clientMenu;
@@ -26,6 +27,7 @@ namespace KawaCzlowiekKomputer.Controllers
             _reservation = reservation;
             _account = account;
             _employee = employee;
+            _catalog = catalog;
             _auth = auth;
         }
 
@@ -129,9 +131,16 @@ namespace KawaCzlowiekKomputer.Controllers
                         _employee.ManageReservations();
                         break;
 
-                    default:
-                        // menu, cennik i karnety dojdą w paczce B
-                        _employeeMenu.ShowMessage("Ta funkcja będzie dostępna wkrótce.");
+                    case EmployeeMenuChoice.CafeMenu:
+                        _catalog.ManageMenu();
+                        break;
+
+                    case EmployeeMenuChoice.Prices:
+                        _catalog.ManagePrices();
+                        break;
+
+                    case EmployeeMenuChoice.Subscriptions:
+                        _catalog.ManageSubscriptions();
                         break;
                 }
             }

@@ -14,7 +14,7 @@ namespace KawaCzlowiekKomputer
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
 
-                                                               // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
+                       // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
             IViewClientMenu clientMenu = new ScreenClientMenu();
             IViewEmployeeMenu employeeMenu = new ScreenEmployeeMenu();
@@ -30,6 +30,9 @@ namespace KawaCzlowiekKomputer
             IViewRegistration viewRegistration = new ScreenRegistration();
             IViewEditStations viewEditStations = new ScreenEditStations();
             IViewEditReservation viewEditReservation = new ScreenEditReservation();
+            IViewEditMenu viewEditMenu = new ScreenEditMenu();
+            IViewEditPrices viewEditPrices = new ScreenEditPrices();
+            IViewEditSubs viewEditSubs = new ScreenEditSubs();
 
             // dane i logika
             IRepo<Rules> rulesRepo = new JsonRepo<Rules>("Rules.json");
@@ -57,9 +60,10 @@ namespace KawaCzlowiekKomputer
                                                 purchaseService, viewAccount);
             var employee = new EmployeeController(authService, stationService, reservationService,
                                                   viewEditStations, viewEditReservation);
+            var catalog = new CatalogController(cafe, subService, viewEditMenu, viewEditPrices, viewEditSubs);
             var auth = new AuthController(authService, viewLogin, viewRegistration);
             var navigation = new NavigationController(mainMenu, clientMenu, employeeMenu, client, reservation,
-                                                      account, employee, auth);
+                                                      account, employee, catalog, auth);
             navigation.Run();
             Console.ResetColor();
             ConsoleHelper.TryClear();
