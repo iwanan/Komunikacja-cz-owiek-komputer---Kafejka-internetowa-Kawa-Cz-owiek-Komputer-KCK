@@ -14,6 +14,5 @@ namespace KawaCzlowiekKomputer.Views
     public interface IViewEmployeeMenu
     {
         EmployeeMenuChoice Show(string userName);
-        void ShowMessage(string text);
     }
 }

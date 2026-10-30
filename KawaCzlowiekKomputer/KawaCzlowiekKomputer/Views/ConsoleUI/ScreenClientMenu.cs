@@ -18,8 +18,6 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             ("Wyloguj",        ClientMenuChoice.Logout)
         };
 
-        private int _bottomRow;
-
         public ClientMenuChoice Show(string userName)
         {
             int selected = 0;
@@ -33,7 +31,6 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 WriteCentered($"Zalogowano jako: {userName}", 3, Colors.Hint);
 
                 int menuTop = 6;
-                _bottomRow = menuTop + Options.Length + 1;
 
                 new Legend(("[↑/↓]", "Wybór"), ("[Enter]", "Zatwierdź"), ("[Esc]", "Wyloguj")).Draw();
 
@@ -51,13 +48,6 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             }
         }
 
-        public void ShowMessage(string text)
-        {
-            int messageRow = _bottomRow + 2;
-            WriteCentered(text, messageRow, Colors.Warning);
-            WriteCentered("Naciśnij dowolny klawisz...", messageRow + 1, Colors.Hint);
-            Console.ReadKey(true);
-        }
 
         private static void WriteCentered(string text, int row, ConsoleColor color)
         {

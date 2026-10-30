@@ -15,14 +15,11 @@ namespace KawaCzlowiekKomputer.Views
         Exit
     }
 
-    /// <summary>
-    /// Kontrakt ekranu startowego. Kontroler zna tylko ten interfejs,
-    /// więc konsolę można później podmienić na GUI.
-    /// </summary>
+    // Kontrakt ekranu startowego. Kontroler zna tylko ten interfejs,
+    // więc konsolę można później podmienić na GUI.
     public interface IViewMainMenu
     {
         MainMenuChoice Show();
-        void ShowMessage(string text);
     }
 }
 

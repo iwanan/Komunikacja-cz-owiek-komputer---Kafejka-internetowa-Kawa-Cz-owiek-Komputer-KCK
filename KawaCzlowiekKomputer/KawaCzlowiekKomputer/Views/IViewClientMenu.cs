@@ -17,6 +17,5 @@ namespace KawaCzlowiekKomputer.Views
     public interface IViewClientMenu
     {
         ClientMenuChoice Show(string userName);
-        void ShowMessage(string text);
     }
 }

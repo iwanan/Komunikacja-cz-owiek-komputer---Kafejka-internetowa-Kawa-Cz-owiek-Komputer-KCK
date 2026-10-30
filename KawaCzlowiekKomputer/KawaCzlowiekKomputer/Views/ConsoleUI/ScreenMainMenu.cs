@@ -29,8 +29,6 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             ("Wyjście",             MainMenuChoice.Exit)
         };
 
-        private int _bottomRow;
-
           public MainMenuChoice Show()
         {
             int selected = 0;
@@ -50,7 +48,6 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
                 row += 2;
                 int menuTop = row;
-                _bottomRow = menuTop + Options.Length + 1;
 
                 new Legend(("[↑/↓]", "Wybór"), ("[Enter]", "Zatwierdź"), ("[Esc]", "Wyjście")).Draw();
 
@@ -67,16 +64,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 return result is null ? MainMenuChoice.Exit : Options[result.Value].Choice;
             }
         }
-
-
-        public void ShowMessage(string text)
-        {
-            int messageRow = _bottomRow + 2;
-            WriteCentered(text, messageRow, Colors.Warning);
-            WriteCentered("Naciśnij dowolny klawisz...", messageRow + 1, Colors.Hint);
-            Console.ReadKey(true);
-        }
-
+        
         private static void WriteCentered(string text, int row, ConsoleColor color)
         {
             int left = Math.Max(0, (ConsoleHelper.WindowWidth - text.Length) / 2);

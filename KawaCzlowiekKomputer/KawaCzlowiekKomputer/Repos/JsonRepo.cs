@@ -49,23 +49,39 @@ namespace KawaCzlowiekKomputer.Repos
                 Save();
         }
 
-        private List<T> Load()
+               private List<T> Load()
         {
             if (!File.Exists(_path)) return new List<T>();
 
             try
             {
                 string json = File.ReadAllText(_path);
+                if (string.IsNullOrWhiteSpace(json)) return new List<T>(); // pusty plik to nie błąd
                 return JsonSerializer.Deserialize<List<T>>(json, Options) ?? new List<T>();
             }
-            catch (JsonException) { return new List<T>(); } // uszkodzony plik
+            catch (JsonException)
+            {
+                Backup();
+                return new List<T>(); // uszkodzony plik
+            }
             catch (IOException) { return new List<T>(); }
         }
 
-        private void Save()
+              // kopia uszkodzonego pliku, żeby następny zapis go nie zniszczył
+        private void Backup()
+        {
+            try { File.Copy(_path, $"{_path}.{DateTime.Now:yyyyMMdd-HHmmss}.bak"); }
+            catch (IOException) { }
+        }
+
+              private void Save()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(_path)!);
-            File.WriteAllText(_path, JsonSerializer.Serialize(_items, Options));
+
+            // zapis przez plik tymczasowy, przerwany zapis nie uszkodzi właściwego pliku
+            string temp = _path + ".tmp";
+            File.WriteAllText(temp, JsonSerializer.Serialize(_items, Options));
+            File.Move(temp, _path, true);
         }
     }
 }
