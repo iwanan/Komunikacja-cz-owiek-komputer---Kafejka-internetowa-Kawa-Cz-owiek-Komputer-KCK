@@ -14,7 +14,7 @@ namespace KawaCzlowiekKomputer
         {
             Console.OutputEncoding = System.Text.Encoding.UTF8; // polskie znaki, strzałki, symbole
 
-                       // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
+                                                               // Jedyne miejsce, które zna konkretną (konsolową) implementację widoku.
             IViewMainMenu mainMenu = new ScreenMainMenu();
             IViewClientMenu clientMenu = new ScreenClientMenu();
             IViewEmployeeMenu employeeMenu = new ScreenEmployeeMenu();
