@@ -1,6 +1,7 @@
 ﻿using KawaCzlowiekKomputer.Helpers;
 using KawaCzlowiekKomputer.Models;
 using KawaCzlowiekKomputer.Views.Components;
+using KawaCzlowiekKomputer.Services;
 
 namespace KawaCzlowiekKomputer.Views.ConsoleUI
 {
@@ -81,14 +82,14 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 stationNames.GetValueOrDefault(r.StationId, "?"),
                 r.Start.ToString("yyyy-MM-dd"),
                 $"{r.Start:HH:mm}-{r.Start.AddHours(r.Hours):HH:mm}",
-                $"{r.Hours} h"
+                ReservationService.GetStatus(r)
             }).ToList();
 
             string hint = rows.Count == 0
                 ? "Nie masz jeszcze żadnych rezerwacji."
                 : $"Liczba rezerwacji: {rows.Count}";
 
-            Picker.FromTable("Historia rezerwacji", new[] { "Stanowisko", "Data", "Godziny", "Czas" },
+            Picker.FromTable("Historia rezerwacji", new[] { "Stanowisko", "Data", "Godziny", "Stan" },
                              rows, hint: hint, readOnly: true);
         }
 

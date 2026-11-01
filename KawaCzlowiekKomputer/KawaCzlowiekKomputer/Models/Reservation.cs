@@ -10,5 +10,8 @@
 
         // Id karnetu klienta, z którego odliczono godziny (null = bez karnetu)
         public int? ClientSubscriptionId { get; set; }
+
+        // true, gdy pracownik potwierdził, że klient przyszedł
+        public bool CheckedIn { get; set; }
     }
 }

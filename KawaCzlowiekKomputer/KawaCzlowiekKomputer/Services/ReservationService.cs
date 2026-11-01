@@ -5,10 +5,11 @@ namespace KawaCzlowiekKomputer.Services
 {
     public class ReservationService
     {
-        public const int OpenHour = 10;   // kafejka otwarta od 10:00
-        public const int CloseHour = 22;  // do 22:00
-        public const int MaxHours = 4;    // najdłuższa jedna rezerwacja
-        public const int DaysAhead = 7;   // na ile dni naprzód można rezerwować
+        public const int OpenHour = 10;            // kafejka otwarta od 10:00
+        public const int CloseHour = 22;           // do 22:00
+        public const int MaxHours = 4;             // najdłuższa jedna rezerwacja
+        public const int DaysAhead = 7;            // na ile dni naprzód można rezerwować
+        public const int GracePeriodMinutes = 15;  // tyle stanowisko czeka na klienta
 
         private readonly IRepo<Reservation> _reservations;
         private readonly SubService _subs;
@@ -17,6 +18,38 @@ namespace KawaCzlowiekKomputer.Services
         {
             _reservations = reservations;
             _subs = subs;
+        }
+
+        // wygasła = klient się nie zgłosił w ciągu 15 minut od startu
+        public static bool IsExpired(Reservation r) =>
+            !r.CheckedIn && DateTime.Now > r.Start.AddMinutes(GracePeriodMinutes);
+
+        // rezerwacja blokuje stanowisko, gdy jeszcze trwa i nie wygasła
+        private static bool IsActive(Reservation r) =>
+            r.Start.AddHours(r.Hours) > DateTime.Now && !IsExpired(r);
+
+        // opis stanu do tabel
+        public static string GetStatus(Reservation r)
+        {
+            if (r.Start.AddHours(r.Hours) <= DateTime.Now) return r.CheckedIn ? "Zrealizowana" : "Wygasła";
+            if (IsExpired(r)) return "Wygasła";
+            if (r.CheckedIn) return "Na miejscu";
+            if (DateTime.Now >= r.Start)
+                return $"Przyjdź do {r.Start.AddMinutes(GracePeriodMinutes):HH:mm}";
+            return "Oczekuje";
+        }
+
+        // zwraca godziny na karnet za wygasłe rezerwacje, każdą tylko raz
+        private void ReleaseExpired()
+        {
+            foreach (Reservation r in _reservations.GetAll())
+            {
+                if (!IsExpired(r) || r.ClientSubscriptionId is null) continue;
+
+                _subs.Refund(r.ClientSubscriptionId.Value, r.Hours);
+                r.ClientSubscriptionId = null; // znacznik, że zwrot już był
+                _reservations.Update(r);
+            }
         }
 
         // dni, na które można rezerwować, od dziś
@@ -48,6 +81,8 @@ namespace KawaCzlowiekKomputer.Services
         public (bool Success, string Message) Create(int clientId, int stationId, DateTime start, int hours,
                                                      int? clientSubscriptionId = null)
         {
+            ReleaseExpired(); // saldo karnetu ma być aktualne
+
             if (hours < 1 || hours > GetMaxHours(stationId, start))
                 return (false, "To stanowisko jest już zajęte w wybranym czasie.");
 
@@ -71,19 +106,25 @@ namespace KawaCzlowiekKomputer.Services
         // czy anulowanie tej rezerwacji zwróci godziny na karnet (tylko jeszcze niezaczęta)
         public bool WillRefund(Reservation r) => r.ClientSubscriptionId is not null && r.Start > DateTime.Now;
 
-        // nadchodzące i trwające rezerwacje klienta
-        public List<Reservation> GetForClient(int clientId) =>
-            _reservations.GetAll()
-                .Where(r => r.ClientId == clientId && r.Start.AddHours(r.Hours) > DateTime.Now)
+        // nadchodzące i trwające rezerwacje klienta, bez wygasłych
+        public List<Reservation> GetForClient(int clientId)
+        {
+            ReleaseExpired();
+            return _reservations.GetAll()
+                .Where(r => r.ClientId == clientId && IsActive(r))
                 .OrderBy(r => r.Start)
                 .ToList();
-                // wszystkie rezerwacje klienta, także minione, od najnowszych
+        }
 
-        public List<Reservation> GetHistory(int clientId) =>
-            _reservations.GetAll()
+        // wszystkie rezerwacje klienta, także minione i wygasłe, od najnowszych
+        public List<Reservation> GetHistory(int clientId)
+        {
+            ReleaseExpired();
+            return _reservations.GetAll()
                 .Where(r => r.ClientId == clientId)
                 .OrderByDescending(r => r.Start)
                 .ToList();
+        }
 
         // klient może anulować tylko własną rezerwację
         public bool Cancel(int reservationId, int clientId)
@@ -94,12 +135,16 @@ namespace KawaCzlowiekKomputer.Services
             Remove(r);
             return true;
         }
-                // wszystkie nadchodzące i trwające rezerwacje, od najbliższej
-        public List<Reservation> GetUpcoming() =>
-            _reservations.GetAll()
-                .Where(r => r.Start.AddHours(r.Hours) > DateTime.Now)
+
+        // wszystkie aktywne rezerwacje, od najbliższej
+        public List<Reservation> GetUpcoming()
+        {
+            ReleaseExpired();
+            return _reservations.GetAll()
+                .Where(IsActive)
                 .OrderBy(r => r.Start)
                 .ToList();
+        }
 
         // anulowanie przez pracownika, bez sprawdzania właściciela
         public bool CancelAsEmployee(int reservationId)
@@ -109,6 +154,19 @@ namespace KawaCzlowiekKomputer.Services
 
             Remove(r);
             return true;
+        }
+
+        // pracownik potwierdza, że klient przyszedł, dopóki rezerwacja nie wygasła
+        public (bool Success, string Message) CheckIn(int reservationId)
+        {
+            Reservation? r = _reservations.GetById(reservationId);
+            if (r is null) return (false, "Nie znaleziono rezerwacji.");
+            if (IsExpired(r)) return (false, "Rezerwacja już wygasła.");
+            if (r.Start > DateTime.Now) return (false, "Rezerwacja jeszcze się nie rozpoczęła.");
+
+            r.CheckedIn = true;
+            _reservations.Update(r);
+            return (true, "Zaznaczono, że klient jest na miejscu.");
         }
 
         // usuwa rezerwację i zwraca godziny na karnet, jeśli rezerwacja jeszcze się nie zaczęła
@@ -122,24 +180,24 @@ namespace KawaCzlowiekKomputer.Services
 
         // czy stanowisko ma nadchodzące lub trwające rezerwacje
         public bool HasUpcoming(int stationId) =>
-            _reservations.GetAll().Any(r => r.StationId == stationId && r.Start.AddHours(r.Hours) > DateTime.Now);
+            _reservations.GetAll().Any(r => r.StationId == stationId && IsActive(r));
 
         // czy stanowisko jest zarezerwowane w tej chwili
         public bool IsReservedNow(int stationId)
         {
             DateTime now = DateTime.Now;
             return _reservations.GetAll().Any(r =>
-                r.StationId == stationId && r.Start <= now && now < r.Start.AddHours(r.Hours));
+                r.StationId == stationId && r.Start <= now && now < r.Start.AddHours(r.Hours) && !IsExpired(r));
         }
 
-        // godzina jest wolna, gdy nie minęła i nie nakłada się na inną rezerwację
+        // godzina jest wolna, gdy nie minęła i nie nakłada się na aktywną rezerwację
         private bool IsFree(int stationId, DateTime start)
         {
             if (start < DateTime.Now) return false;
 
             DateTime end = start.AddHours(1);
             return !_reservations.GetAll().Any(r =>
-                r.StationId == stationId && r.Start < end && start < r.Start.AddHours(r.Hours));
+                r.StationId == stationId && !IsExpired(r) && r.Start < end && start < r.Start.AddHours(r.Hours));
         }
     }
 }

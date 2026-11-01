@@ -1,4 +1,6 @@
-﻿using KawaCzlowiekKomputer.Models;
+﻿using KawaCzlowiekKomputer.Helpers;
+using KawaCzlowiekKomputer.Models;
+using KawaCzlowiekKomputer.Services;
 using KawaCzlowiekKomputer.Views.Components;
 
 namespace KawaCzlowiekKomputer.Views.ConsoleUI
@@ -14,15 +16,28 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 stationNames.GetValueOrDefault(r.StationId, "?"),
                 r.Start.ToString("yyyy-MM-dd"),
                 $"{r.Start:HH:mm}-{r.Start.AddHours(r.Hours):HH:mm}",
-                $"{r.Hours} h"
+                ReservationService.GetStatus(r)
             }).ToList();
 
-            string hint = rows.Count == 0 ? "Brak nadchodzących rezerwacji." : "Enter anuluje wybraną rezerwację";
-            int? index = Picker.FromTable("Rezerwacje klientów",
-                                          new[] { "Klient", "Stanowisko", "Data", "Godziny", "Czas" },
-                                          rows, hint: hint, enterAction: "Anuluj");
+            string hint = rows.Count == 0 ? "Brak nadchodzących rezerwacji." : "Enter otwiera akcje dla rezerwacji";
+            return Picker.FromTable("Rezerwacje klientów",
+                                    new[] { "Klient", "Stanowisko", "Data", "Godziny", "Stan" },
+                                    rows,
+                                    rowColor: i => reservations[i].CheckedIn ? Colors.Success : Colors.Text,
+                                    hint: hint, enterAction: "Akcje");
+        }
 
-            return index is null ? null : reservations[index.Value].Id;
+        public ReservationActionChoice PickAction(string title)
+        {
+            int? result = Picker.FromMenu(title, "Wybierz, co zrobić",
+                                          new[] { "Klient przyszedł", "Anuluj rezerwację", "Wróć" });
+
+            return result switch
+            {
+                0 => ReservationActionChoice.CheckIn,
+                1 => ReservationActionChoice.Cancel,
+                _ => ReservationActionChoice.Back // Esc albo "Wróć"
+            };
         }
 
         public bool Confirm(string question) =>

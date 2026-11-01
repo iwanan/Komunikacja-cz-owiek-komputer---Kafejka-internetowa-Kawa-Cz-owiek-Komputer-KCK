@@ -1,6 +1,7 @@
 ﻿using KawaCzlowiekKomputer.Helpers;
 using KawaCzlowiekKomputer.Models;
 using KawaCzlowiekKomputer.Views.Components;
+using KawaCzlowiekKomputer.Services;
 
 namespace KawaCzlowiekKomputer.Views.ConsoleUI
 {
@@ -26,11 +27,11 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 stationNames.GetValueOrDefault(r.StationId, "?"),
                 r.Start.ToString("yyyy-MM-dd"),
                 $"{r.Start:HH:mm}-{r.Start.AddHours(r.Hours):HH:mm}",
-                $"{r.Hours} h"
+                 ReservationService.GetStatus(r)
             }).ToList();
 
             string hint = rows.Count == 0 ? "Nie masz żadnych rezerwacji." : "Enter anuluje wybraną rezerwację";
-            int? index = Picker.FromTable("Moje rezerwacje", new[] { "Stanowisko", "Data", "Godziny", "Czas" },
+            int? index = Picker.FromTable("Moje rezerwacje", new[] { "Stanowisko", "Data", "Godziny", "Stan" },
                                           rows, hint: hint, enterAction: "Anuluj");
 
             return index is null ? null : reservations[index.Value].Id;

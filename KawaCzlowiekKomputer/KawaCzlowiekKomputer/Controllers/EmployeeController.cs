@@ -73,6 +73,7 @@ namespace KawaCzlowiekKomputer.Controllers
         }
 
         // lista nadchodzących rezerwacji wszystkich klientów, Enter anuluje po potwierdzeniu
+         // lista aktywnych rezerwacji wszystkich klientów, Enter otwiera akcje
         public void ManageReservations()
         {
             while (true)
@@ -81,14 +82,26 @@ namespace KawaCzlowiekKomputer.Controllers
                 var stationNames = _stations.GetForEdit().ToDictionary(s => s.Id, s => s.Name);
                 var clientNames = _auth.GetClientNames();
 
-                int? id = _viewReservations.PickReservation(all, stationNames, clientNames);
-                if (id is null) return;
+                int? index = _viewReservations.PickReservation(all, stationNames, clientNames);
+                if (index is null) return;
 
-                if (!_viewReservations.Confirm("Anulować wybraną rezerwację?")) continue;
+                Reservation r = all[index.Value];
+                string title = $"{clientNames.GetValueOrDefault(r.ClientId, "?")}, {stationNames.GetValueOrDefault(r.StationId, "?")}";
 
-                bool ok = _reservations.CancelAsEmployee(id.Value);
-                _viewReservations.ShowMessage(
-                    ok ? "Rezerwacja została anulowana." : "Nie udało się anulować rezerwacji.", ok);
+                switch (_viewReservations.PickAction(title))
+                {
+                    case ReservationActionChoice.CheckIn:
+                        var (success, message) = _reservations.CheckIn(r.Id);
+                        _viewReservations.ShowMessage(message, success);
+                        break;
+
+                    case ReservationActionChoice.Cancel:
+                        if (!_viewReservations.Confirm("Anulować wybraną rezerwację?")) break;
+                        bool ok = _reservations.CancelAsEmployee(r.Id);
+                        _viewReservations.ShowMessage(
+                            ok ? "Rezerwacja została anulowana." : "Nie udało się anulować rezerwacji.", ok);
+                        break;
+                }
             }
         }
 
