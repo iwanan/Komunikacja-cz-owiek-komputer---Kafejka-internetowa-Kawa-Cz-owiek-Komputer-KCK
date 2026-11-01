@@ -8,15 +8,16 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
     {
         public AccountMenuChoice ShowMenu(string login)
         {
-            string[] items = { "Dane konta", "Historia rezerwacji", "Historia zakupów", "Zmiana hasła", "Wróć" };
+            string[] items = { "Dane konta", "Historia rezerwacji", "Moje karnety", "Historia zakupów", "Zmiana hasła", "Wróć" };
             int? result = Picker.FromMenu("Moje konto", $"Zalogowano jako: {login}", items);
 
             return result switch
             {
                 0 => AccountMenuChoice.Details,
                 1 => AccountMenuChoice.Reservations,
-                2 => AccountMenuChoice.Purchases,
-                3 => AccountMenuChoice.ChangePassword,
+                2 => AccountMenuChoice.Subscriptions,
+                3 => AccountMenuChoice.Purchases,
+                4 => AccountMenuChoice.ChangePassword,
                 _ => AccountMenuChoice.Back // Esc albo "Wróć"
             };
         }
@@ -89,6 +90,28 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
             Picker.FromTable("Historia rezerwacji", new[] { "Stanowisko", "Data", "Godziny", "Czas" },
                              rows, hint: hint, readOnly: true);
+        }
+
+        public void ShowSubscriptions(List<ClientSubscription> subscriptions, int hoursLeft)
+        {
+            static string Status(ClientSubscription c) =>
+                c.IsActive ? "Aktywny" : c.HoursLeft == 0 ? "Wykorzystany" : "Wygasł";
+
+            var rows = subscriptions.Select(c => new[]
+            {
+                c.Name,
+                $"{c.HoursLeft} / {c.TotalHours} h",
+                c.ExpiresOn.ToString("yyyy-MM-dd"),
+                Status(c)
+            }).ToList();
+
+            string hint = rows.Count == 0
+                ? "Nie masz jeszcze żadnych karnetów."
+                : $"Dostępne godziny: {hoursLeft} h";
+
+            Picker.FromTable("Moje karnety", new[] { "Karnet", "Pozostało", "Ważny do", "Stan" },
+                             rows, rowColor: i => subscriptions[i].IsActive ? Colors.Success : Colors.Hint,
+                             hint: hint, readOnly: true);
         }
 
         public void ShowPurchases(List<Purchase> purchases, decimal total)

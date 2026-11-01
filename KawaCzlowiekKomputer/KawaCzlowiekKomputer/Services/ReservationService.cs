@@ -11,8 +11,13 @@ namespace KawaCzlowiekKomputer.Services
         public const int DaysAhead = 7;   // na ile dni naprzód można rezerwować
 
         private readonly IRepo<Reservation> _reservations;
+        private readonly SubService _subs;
 
-        public ReservationService(IRepo<Reservation> reservations) => _reservations = reservations;
+        public ReservationService(IRepo<Reservation> reservations, SubService subs)
+        {
+            _reservations = reservations;
+            _subs = subs;
+        }
 
         // dni, na które można rezerwować, od dziś
         public List<DateTime> GetDays() =>
@@ -38,15 +43,33 @@ namespace KawaCzlowiekKomputer.Services
             return hours;
         }
 
-        // zapisuje rezerwację po ponownym sprawdzeniu kolizji
-        public (bool Success, string Message) Create(int clientId, int stationId, DateTime start, int hours)
+        // zapisuje rezerwację po ponownym sprawdzeniu kolizji,
+        // z karnetem odlicza godziny dopiero, gdy termin jest na pewno wolny
+        public (bool Success, string Message) Create(int clientId, int stationId, DateTime start, int hours,
+                                                     int? clientSubscriptionId = null)
         {
             if (hours < 1 || hours > GetMaxHours(stationId, start))
                 return (false, "To stanowisko jest już zajęte w wybranym czasie.");
 
-            _reservations.Add(new Reservation { ClientId = clientId, StationId = stationId, Start = start, Hours = hours });
-            return (true, "Rezerwacja została zapisana.");
+            if (clientSubscriptionId is int subId && !_subs.TryUse(subId, clientId, start, hours))
+                return (false, "Karnet nie ma wystarczającej liczby godzin albo wygasa przed tym terminem.");
+
+            _reservations.Add(new Reservation
+            {
+                ClientId = clientId,
+                StationId = stationId,
+                Start = start,
+                Hours = hours,
+                ClientSubscriptionId = clientSubscriptionId
+            });
+
+            return (true, clientSubscriptionId is null
+                ? "Rezerwacja została zapisana."
+                : "Rezerwacja została zapisana, godziny odliczono z karnetu.");
         }
+
+        // czy anulowanie tej rezerwacji zwróci godziny na karnet (tylko jeszcze niezaczęta)
+        public bool WillRefund(Reservation r) => r.ClientSubscriptionId is not null && r.Start > DateTime.Now;
 
         // nadchodzące i trwające rezerwacje klienta
         public List<Reservation> GetForClient(int clientId) =>
@@ -68,7 +91,7 @@ namespace KawaCzlowiekKomputer.Services
             Reservation? r = _reservations.GetById(reservationId);
             if (r is null || r.ClientId != clientId) return false;
 
-            _reservations.Delete(reservationId);
+            Remove(r);
             return true;
         }
                 // wszystkie nadchodzące i trwające rezerwacje, od najbliższej
@@ -81,10 +104,20 @@ namespace KawaCzlowiekKomputer.Services
         // anulowanie przez pracownika, bez sprawdzania właściciela
         public bool CancelAsEmployee(int reservationId)
         {
-            if (_reservations.GetById(reservationId) is null) return false;
+            Reservation? r = _reservations.GetById(reservationId);
+            if (r is null) return false;
 
-            _reservations.Delete(reservationId);
+            Remove(r);
             return true;
+        }
+
+        // usuwa rezerwację i zwraca godziny na karnet, jeśli rezerwacja jeszcze się nie zaczęła
+        private void Remove(Reservation r)
+        {
+            if (WillRefund(r))
+                _subs.Refund(r.ClientSubscriptionId!.Value, r.Hours);
+
+            _reservations.Delete(r.Id);
         }
 
         // czy stanowisko ma nadchodzące lub trwające rezerwacje

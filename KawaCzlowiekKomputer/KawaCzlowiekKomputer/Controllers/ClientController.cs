@@ -38,8 +38,8 @@ namespace KawaCzlowiekKomputer.Controllers
         // pobiera punkty z serwisu i przekazuje je widokowi
         public void ShowRules() => _viewRules.Show(_cafe.GetRules());
 
-        // pobiera stanowiska z serwisu i przekazuje je widokowi
-        public void ShowStations() => _viewStations.Show(_stationService.GetStations());
+        // pokazuje stanowiska, zwraca wybrane (Enter, do rezerwacji) albo null po Esc
+        public Station? ShowStations() => _viewStations.Show(_stationService.GetStations());
 
         public void ShowPrices() => _viewPrices.Show(_cafe.GetPrices());
 
@@ -56,7 +56,8 @@ namespace KawaCzlowiekKomputer.Controllers
                 if (!_viewSubs.Confirm($"Kupić {sub.Name} za {sub.Price:0.00} zł?")) continue;
 
                 _purchases.Add(client.Id, sub.Name, "Karnet", sub.Price);
-                _viewSubs.ShowMessage($"Kupiono: {sub.Name}.", true);
+                ClientSubscription owned = _subService.Grant(client.Id, sub);
+                _viewSubs.ShowMessage($"Kupiono: {sub.Name}. Ważny do {owned.ExpiresOn:yyyy-MM-dd}.", true);
             }
         }
 

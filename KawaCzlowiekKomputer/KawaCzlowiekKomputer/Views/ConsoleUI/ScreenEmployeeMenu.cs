@@ -12,6 +12,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             ("Menu kawiarni", EmployeeMenuChoice.CafeMenu),
             ("Cennik",        EmployeeMenuChoice.Prices),
             ("Karnety",       EmployeeMenuChoice.Subscriptions),
+            ("Pracownicy",    EmployeeMenuChoice.Employees),
             ("Wyloguj",       EmployeeMenuChoice.Logout)
         };
 
