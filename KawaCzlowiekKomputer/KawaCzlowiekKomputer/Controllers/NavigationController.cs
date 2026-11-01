@@ -1,4 +1,5 @@
-﻿using KawaCzlowiekKomputer.Views;
+﻿using KawaCzlowiekKomputer.Models;
+using KawaCzlowiekKomputer.Views;
 
 namespace KawaCzlowiekKomputer.Controllers
 {
@@ -76,7 +77,9 @@ namespace KawaCzlowiekKomputer.Controllers
                         break;
 
                     case ClientMenuChoice.Stations:
-                        _client.ShowStations();
+                        // Enter na stanowisku od razu przechodzi do rezerwacji
+                        Station? picked = _client.ShowStations();
+                        if (picked is not null) _reservation.ReserveStation(_auth.CurrentClient!, picked);
                         break;
 
                     case ClientMenuChoice.Reservations:
@@ -141,6 +144,10 @@ namespace KawaCzlowiekKomputer.Controllers
 
                     case EmployeeMenuChoice.Subscriptions:
                         _catalog.ManageSubscriptions();
+                        break;
+
+                    case EmployeeMenuChoice.Employees:
+                        _employee.ManageEmployees(_auth.CurrentEmployee!);
                         break;
                 }
             }

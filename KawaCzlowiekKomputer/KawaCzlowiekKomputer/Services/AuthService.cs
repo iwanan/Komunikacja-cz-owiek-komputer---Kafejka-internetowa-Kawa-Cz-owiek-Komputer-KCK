@@ -9,6 +9,9 @@ namespace KawaCzlowiekKomputer.Services
         private readonly IRepo<Client> _clients;
         private readonly IRepo<Employee> _employees;
 
+        // hasło konta startowego, ustawione tylko przy pierwszym uruchomieniu (null w pozostałych)
+        public string? InitialAdminPassword { get; private set; }
+
         public AuthService(IRepo<Client> clients, IRepo<Employee> employees)
         {
             _clients = clients;
@@ -66,7 +69,28 @@ namespace KawaCzlowiekKomputer.Services
             _clients.Update(client);
             return (true, "Hasło zostało zmienione.");
         }
-                // loginy klientów po Id, do list widzianych przez pracownika
+                // pracownicy w kolejności Id
+        public List<Employee> GetEmployees() => _employees.GetAll().OrderBy(e => e.Id).ToList();
+
+        // nowe konto pracownika: te same reguły co przy rejestracji klienta, login unikalny w całej aplikacji
+        public (bool Success, string Message) AddEmployee(string login, string email, string password)
+        {
+            login = login.Trim();
+            email = email.Trim();
+
+            string? error = Validation.ValidateLogin(login)
+                            ?? Validation.ValidateEmail(email)
+                            ?? Validation.ValidatePassword(password);
+            if (error is not null) return (false, error);
+
+            if (LoginTaken(login)) return (false, "Ten login jest już zajęty.");
+
+            var (hash, salt) = PasswordHelper.CreateHash(password);
+            _employees.Add(new Employee { Login = login, Email = email, PasswordHash = hash, Salt = salt });
+            return (true, $"Konto pracownika {login} zostało utworzone.");
+        }
+
+        // loginy klientów po Id, do list widzianych przez pracownika
         public Dictionary<int, string> GetClientNames() =>
             _clients.GetAll().ToDictionary(c => c.Id, c => c.Login);
 
@@ -77,13 +101,15 @@ namespace KawaCzlowiekKomputer.Services
         private static bool SameLogin(string a, string b) =>
             string.Equals(a, b.Trim(), StringComparison.OrdinalIgnoreCase);
 
-        // pierwsze uruchomienie: dodaje konto startowe do Employees.json
+        // pierwsze uruchomienie: dodaje konto startowe z losowym hasłem do Employees.json,
         private void SeedEmployee()
         {
             if (_employees.GetAll().Count > 0) return;
 
-            var (hash, salt) = PasswordHelper.CreateHash("admin1");
+            string password = /*PasswordHelper.GenerateRandomPassword()*/"admin1";
+            var (hash, salt) = PasswordHelper.CreateHash(password);
             _employees.Add(new Employee { Login = "admin", Email = "admin@kck.pl", PasswordHash = hash, Salt = salt });
+            InitialAdminPassword = password;
         }
     }
 }

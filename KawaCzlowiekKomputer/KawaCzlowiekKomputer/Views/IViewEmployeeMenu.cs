@@ -7,6 +7,7 @@ namespace KawaCzlowiekKomputer.Views
         CafeMenu,
         Prices,
         Subscriptions,
+        Employees,
         Logout
     }
 

@@ -8,12 +8,15 @@ namespace KawaCzlowiekKomputer.Controllers
     {
         private readonly ReservationService _reservations;
         private readonly StationService _stations;
+        private readonly SubService _subs;
         private readonly IViewReservation _view;
 
-        public ReservationController(ReservationService reservations, StationService stations, IViewReservation view)
+        public ReservationController(ReservationService reservations, StationService stations,
+                                     SubService subs, IViewReservation view)
         {
             _reservations = reservations;
             _stations = stations;
+            _subs = subs;
             _view = view;
         }
 
@@ -38,10 +41,13 @@ namespace KawaCzlowiekKomputer.Controllers
             }
         }
 
+        // rezerwacja od razu na wybranym stanowisku (np. z ekranu stanowisk), pomija krok wyboru stanowiska
+        public void ReserveStation(Client client, Station station) => CreateReservation(client, station);
+
         // cztery kroki: stanowisko, dzień, godzina, czas trwania; Esc w dowolnym kroku wraca do menu
-        private void CreateReservation(Client client)
+        private void CreateReservation(Client client, Station? preselected = null)
         {
-            Station? station = _view.PickStation(_stations.GetStations());
+            Station? station = preselected ?? _view.PickStation(_stations.GetStations());
             if (station is null) return;
 
             DateTime? day = _view.PickDay(_reservations.GetDays());
@@ -61,7 +67,14 @@ namespace KawaCzlowiekKomputer.Controllers
             int? hours = _view.PickDuration(max);
             if (hours is null) return;
 
-            var (success, message) = _reservations.Create(client.Id, station.Id, start, hours.Value);
+            // karnet proponujemy tylko wtedy, gdy pokryje całą rezerwację w tym terminie
+            int? subscriptionId = null;
+            ClientSubscription? sub = _subs.FindForReservation(client.Id, start, hours.Value);
+            if (sub is not null &&
+                _view.Confirm($"Zapłacić karnetem {sub.Name}? (zostanie {sub.HoursLeft - hours.Value} h)"))
+                subscriptionId = sub.Id;
+
+            var (success, message) = _reservations.Create(client.Id, station.Id, start, hours.Value, subscriptionId);
             _view.ShowMessage(success
                 ? $"{message} {station.Name}, {start:yyyy-MM-dd HH:mm}, {hours} h."
                 : message, success);
@@ -80,8 +93,13 @@ namespace KawaCzlowiekKomputer.Controllers
 
                 if (_view.Confirm("Anulować wybraną rezerwację?"))
                 {
+                    Reservation? chosen = mine.FirstOrDefault(r => r.Id == id.Value);
+                    bool refund = chosen is not null && _reservations.WillRefund(chosen);
+
                     bool ok = _reservations.Cancel(id.Value, client.Id);
-                    _view.ShowMessage(ok ? "Rezerwacja została anulowana." : "Nie udało się anulować rezerwacji.", ok);
+                    _view.ShowMessage(ok
+                        ? (refund ? "Rezerwacja anulowana, godziny wróciły na karnet." : "Rezerwacja została anulowana.")
+                        : "Nie udało się anulować rezerwacji.", ok);
                 }
             }
         }

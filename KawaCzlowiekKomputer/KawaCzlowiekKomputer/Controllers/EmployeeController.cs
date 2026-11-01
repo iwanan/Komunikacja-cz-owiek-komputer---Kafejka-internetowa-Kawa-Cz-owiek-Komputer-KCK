@@ -11,10 +11,13 @@ namespace KawaCzlowiekKomputer.Controllers
         private readonly ReservationService _reservations;
         private readonly IViewEditStations _viewStations;
         private readonly IViewEditReservation _viewReservations;
+        private readonly IViewEditEmployees _viewEmployees;
 
         public EmployeeController(AuthService auth, StationService stations, ReservationService reservations,
-                                  IViewEditStations viewStations, IViewEditReservation viewReservations)
+                                  IViewEditStations viewStations, IViewEditReservation viewReservations,
+                                  IViewEditEmployees viewEmployees)
         {
+            _viewEmployees = viewEmployees;
             _auth = auth;
             _stations = stations;
             _reservations = reservations;
@@ -52,6 +55,20 @@ namespace KawaCzlowiekKomputer.Controllers
                         DeleteStation(station);
                         break;
                 }
+            }
+        }
+
+        // lista pracowników, ostatnia pozycja dodaje nowego, current to zalogowany pracownik
+        public void ManageEmployees(Employee current)
+        {
+            while (true)
+            {
+                List<Employee> employees = _auth.GetEmployees();
+                int? index = _viewEmployees.PickEmployee(employees, current.Id);
+                if (index is null) return;
+
+                if (index.Value == employees.Count)
+                    EmployeeForm();
             }
         }
 
@@ -104,6 +121,38 @@ namespace KawaCzlowiekKomputer.Controllers
                 if (success)
                 {
                     _viewStations.ShowMessage(message, true);
+                    return;
+                }
+
+                error = message;
+            }
+        }
+
+        // formularz do skutku: konto utworzone albo Esc, login i e-mail zostają po błędzie
+        private void EmployeeForm()
+        {
+            string? error = null;
+            string login = "";
+            string email = "";
+
+            while (true)
+            {
+                var data = _viewEmployees.Ask(error, login, email);
+                if (data is null) return;
+
+                login = data.Value.Login;
+                email = data.Value.Email;
+
+                if (data.Value.Password != data.Value.Confirm)
+                {
+                    error = "Hasła nie są takie same.";
+                    continue;
+                }
+
+                var (success, message) = _auth.AddEmployee(login, email, data.Value.Password);
+                if (success)
+                {
+                    _viewEmployees.ShowMessage(message, true);
                     return;
                 }
 

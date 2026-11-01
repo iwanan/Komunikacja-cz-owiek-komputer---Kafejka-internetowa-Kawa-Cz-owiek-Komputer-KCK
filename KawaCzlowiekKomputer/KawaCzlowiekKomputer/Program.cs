@@ -4,6 +4,7 @@ using KawaCzlowiekKomputer.Models;
 using KawaCzlowiekKomputer.Repos;
 using KawaCzlowiekKomputer.Services;
 using KawaCzlowiekKomputer.Views;
+using KawaCzlowiekKomputer.Views.Components;
 using KawaCzlowiekKomputer.Views.ConsoleUI;
 
 namespace KawaCzlowiekKomputer
@@ -29,6 +30,7 @@ namespace KawaCzlowiekKomputer
             IViewLogin viewLogin = new ScreenLogin();
             IViewRegistration viewRegistration = new ScreenRegistration();
             IViewEditStations viewEditStations = new ScreenEditStations();
+            IViewEditEmployees viewEditEmployees = new ScreenEditEmployees();
             IViewEditReservation viewEditReservation = new ScreenEditReservation();
             IViewEditMenu viewEditMenu = new ScreenEditMenu();
             IViewEditPrices viewEditPrices = new ScreenEditPrices();
@@ -43,23 +45,28 @@ namespace KawaCzlowiekKomputer
             IRepo<Station> stationsRepo = new JsonRepo<Station>("Stations.json");
             IRepo<Reservation> reservationsRepo = new JsonRepo<Reservation>("Reservations.json");
             IRepo<Purchase> purchasesRepo = new JsonRepo<Purchase>("Purchases.json");
+            IRepo<ClientSubscription> clientSubsRepo = new JsonRepo<ClientSubscription>("ClientSubscriptions.json");
             IRepo<Client> clientsRepo = new JsonRepo<Client>("Users.json");
             IRepo<Employee> employeesRepo = new JsonRepo<Employee>("Employees.json");
 
             var cafe = new CafeService(rulesRepo, pricesRepo, gamesRepo, menuRepo);
-            var subService = new SubService(subsRepo);
+            var subService = new SubService(subsRepo, clientSubsRepo);
             var purchaseService = new PurchaseService(purchasesRepo);
-            var reservationService = new ReservationService(reservationsRepo);
+            var reservationService = new ReservationService(reservationsRepo, subService);
             var stationService = new StationService(stationsRepo, reservationService);
             var authService = new AuthService(clientsRepo, employeesRepo);
 
+            // pierwsze uruchomienie: hasło konta pracownika jest losowe i pokazane tylko raz
+            if (authService.InitialAdminPassword is string initialPassword)
+                MessageScreen.Show($"Konto pracownika: admin / {initialPassword}  (zapisz je, nie pojawi się ponownie)", true);
+
             var client = new ClientController(cafe, stationService, subService, purchaseService,
                                               viewRules, viewStations, viewPrices, viewSubs, viewGames, viewMenu);
-            var reservation = new ReservationController(reservationService, stationService, viewReservation);
+            var reservation = new ReservationController(reservationService, stationService, subService, viewReservation);
             var account = new AccountController(authService, reservationService, stationService,
-                                                purchaseService, viewAccount);
+                                                purchaseService, subService, viewAccount);
             var employee = new EmployeeController(authService, stationService, reservationService,
-                                                  viewEditStations, viewEditReservation);
+                                                  viewEditStations, viewEditReservation, viewEditEmployees);
             var catalog = new CatalogController(cafe, subService, viewEditMenu, viewEditPrices, viewEditSubs);
             var auth = new AuthController(authService, viewLogin, viewRegistration);
             var navigation = new NavigationController(mainMenu, clientMenu, employeeMenu, client, reservation,

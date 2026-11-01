@@ -18,6 +18,7 @@
     <None Remove="Data\Prices.json" />
     <None Remove="Data\Subscriptions.json" />
     <None Remove="Data\Purchases.json" />
+    <None Remove="Data\ClientSubscriptions.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -49,6 +50,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
         <Content Include="Data\Purchases.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Data\ClientSubscriptions.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

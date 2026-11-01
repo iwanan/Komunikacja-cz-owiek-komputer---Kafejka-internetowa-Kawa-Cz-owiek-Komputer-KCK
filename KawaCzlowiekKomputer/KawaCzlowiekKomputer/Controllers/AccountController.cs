@@ -10,11 +10,14 @@ namespace KawaCzlowiekKomputer.Controllers
         private readonly ReservationService _reservations;
         private readonly StationService _stations;
         private readonly PurchaseService _purchases;
+        private readonly SubService _subs;
         private readonly IViewAccount _view;
 
         public AccountController(AuthService auth, ReservationService reservations,
-                                 StationService stations, PurchaseService purchases, IViewAccount view)
+                                 StationService stations, PurchaseService purchases,
+                                 SubService subs, IViewAccount view)
         {
+            _subs = subs;
             _auth = auth;
             _reservations = reservations;
             _stations = stations;
@@ -37,6 +40,10 @@ namespace KawaCzlowiekKomputer.Controllers
                     case AccountMenuChoice.Reservations:
                         var names = _stations.GetStations().ToDictionary(s => s.Id, s => s.Name);
                         _view.ShowReservations(_reservations.GetHistory(client.Id), names);
+                        break;
+
+                    case AccountMenuChoice.Subscriptions:
+                        _view.ShowSubscriptions(_subs.GetForClient(client.Id), _subs.GetHoursLeft(client.Id));
                         break;
 
                     case AccountMenuChoice.Purchases:

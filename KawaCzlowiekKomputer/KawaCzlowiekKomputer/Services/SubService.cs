@@ -7,8 +7,73 @@ namespace KawaCzlowiekKomputer.Services
     public class SubService
     {
         private readonly IRepo<Subscription> _subs;
+        private readonly IRepo<ClientSubscription> _owned;
 
-        public SubService(IRepo<Subscription> subs) => _subs = subs;
+        public SubService(IRepo<Subscription> subs, IRepo<ClientSubscription> owned)
+        {
+            _subs = subs;
+            _owned = owned;
+        }
+
+        // nadaje klientowi karnet po zakupie, ważność liczona od dziś (włącznie z ostatnim dniem)
+        public ClientSubscription Grant(int clientId, Subscription offer)
+        {
+            var owned = new ClientSubscription
+            {
+                ClientId = clientId,
+                Name = offer.Name,
+                TotalHours = offer.Hours,
+                HoursLeft = offer.Hours,
+                PurchaseDate = DateTime.Now,
+                ExpiresOn = DateTime.Today.AddDays(offer.ValidDays)
+            };
+            _owned.Add(owned);
+            return owned;
+        }
+
+        // wszystkie karnety klienta, aktywne na górze (najszybciej wygasające), potem pozostałe
+        public List<ClientSubscription> GetForClient(int clientId) =>
+            _owned.GetAll()
+                .Where(c => c.ClientId == clientId)
+                .OrderByDescending(c => c.IsActive)
+                .ThenBy(c => c.ExpiresOn)
+                .ThenBy(c => c.Id)
+                .ToList();
+
+        // suma godzin z aktywnych karnetów
+        public int GetHoursLeft(int clientId) =>
+            _owned.GetAll().Where(c => c.ClientId == clientId && c.IsActive).Sum(c => c.HoursLeft);
+
+        // karnet, który pokryje całą rezerwację: ważny w dniu rezerwacji i z wystarczającą liczbą godzin,
+        // najpierw ten, który wygaśnie najszybciej
+        public ClientSubscription? FindForReservation(int clientId, DateTime start, int hours) =>
+            _owned.GetAll()
+                .Where(c => c.ClientId == clientId && c.HoursLeft >= hours && c.IsValidOn(start))
+                .OrderBy(c => c.ExpiresOn)
+                .ThenBy(c => c.Id)
+                .FirstOrDefault();
+
+        // odlicza godziny, false gdy karnet nie istnieje, jest cudzy, za mały albo wygasa przed terminem
+        public bool TryUse(int clientSubscriptionId, int clientId, DateTime start, int hours)
+        {
+            ClientSubscription? c = _owned.GetById(clientSubscriptionId);
+            if (c is null || c.ClientId != clientId || c.HoursLeft < hours || !c.IsValidOn(start))
+                return false;
+
+            c.HoursLeft -= hours;
+            _owned.Update(c);
+            return true;
+        }
+
+        // zwraca godziny po anulowaniu rezerwacji, nigdy powyżej pierwotnej liczby godzin karnetu
+        public void Refund(int clientSubscriptionId, int hours)
+        {
+            ClientSubscription? c = _owned.GetById(clientSubscriptionId);
+            if (c is null) return;
+
+            c.HoursLeft = Math.Min(c.TotalHours, c.HoursLeft + hours);
+            _owned.Update(c);
+        }
 
         // karnety w kolejności Id
         public List<Subscription> GetSubscriptions() => _subs.GetAll().OrderBy(s => s.Id).ToList();

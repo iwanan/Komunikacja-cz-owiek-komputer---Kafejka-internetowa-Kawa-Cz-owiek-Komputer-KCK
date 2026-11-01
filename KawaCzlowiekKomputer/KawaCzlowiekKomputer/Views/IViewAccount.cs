@@ -6,6 +6,7 @@ namespace KawaCzlowiekKomputer.Views
     {
         Details,
         Reservations,
+        Subscriptions,
         Purchases,
         ChangePassword,
         Back
@@ -21,6 +22,9 @@ namespace KawaCzlowiekKomputer.Views
 
         // historia rezerwacji, wraca po Esc
         void ShowReservations(List<Reservation> reservations, Dictionary<int, string> stationNames);
+
+        // karnety klienta z godzinami i ważnością, wraca po Esc
+        void ShowSubscriptions(List<ClientSubscription> subscriptions, int hoursLeft);
 
         // historia zakupów z sumą, wraca po Esc
         void ShowPurchases(List<Purchase> purchases, decimal total);

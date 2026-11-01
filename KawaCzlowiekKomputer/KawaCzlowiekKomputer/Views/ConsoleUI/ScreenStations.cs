@@ -13,14 +13,17 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
         private int _borderLeft;
         private int _borderWidth;
         private int _detailTop;
+        private Station? _picked;
 
-        public void Show(List<Station> stations)
+        public Station? Show(List<Station> stations)
         {
             _stations = stations;
             _selected = 0;
+            _picked = null;
 
             // przerysowuje ekran po każdej zmianie rozmiaru okna
             while (DrawAndWait()) { }
+            return _picked;
         }
 
         // zwraca true, gdy trzeba przerysować ekran (zmiana rozmiaru), false po Esc
@@ -73,7 +76,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             WriteAt(_borderLeft + 2, top + 1, $"Wolne: {free} z {_stations.Count}", Colors.Accent);
 
             DrawDetail();
-            new Legend(("[↑/↓]", "Wybór"), ("[Esc]", "Wróć")).Draw();
+            new Legend(("[↑/↓]", "Wybór"), ("[Enter]", "Rezerwuj"), ("[Esc]", "Wróć")).Draw();
 
             while (true)
             {
@@ -87,7 +90,9 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
                 if (result is null) return false;
 
-                // Enter: rezerwacja stanowiska dojdzie w kolejnym kroku
+                // Enter: zwracamy wybrane stanowisko, kontroler przejdzie do rezerwacji
+                _picked = _stations[result.Value];
+                return false;
             }
         }
 

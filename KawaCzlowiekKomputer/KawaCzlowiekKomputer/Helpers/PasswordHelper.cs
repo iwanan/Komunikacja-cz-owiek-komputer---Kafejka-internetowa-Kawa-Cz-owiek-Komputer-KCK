@@ -9,6 +9,23 @@ namespace KawaCzlowiekKomputer.Helpers
         private const int HashSize = 32;
         private const int Iterations = 100_000;
 
+        // alfabet bez znaków łatwych do pomylenia (0/O, 1/l/I)
+        private const string PasswordChars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789";
+
+        // losowe hasło startowe, zawsze z cyfrą i literą
+        public static string GenerateRandomPassword(int length = 10)
+        {
+            while (true)
+            {
+                var chars = new char[length];
+                for (int i = 0; i < length; i++)
+                    chars[i] = PasswordChars[RandomNumberGenerator.GetInt32(PasswordChars.Length)];
+
+                string password = new(chars);
+                if (password.Any(char.IsDigit) && password.Any(char.IsLetter)) return password;
+            }
+        }
+
         // zwraca hash i sól w base64
         public static (string Hash, string Salt) CreateHash(string password)
         {
