@@ -23,7 +23,7 @@ namespace KawaCzlowiekKomputer.Views.Components
             int total = _items.Sum(i => i.Key.Length + 1 + i.Action.Length) + 3 * (_items.Length - 1);
             int left = Math.Max(0, (ConsoleHelper.WindowWidth - total) / 2);
 
-            Console.SetCursorPosition(left, y);
+            ConsoleHelper.SetCursor(left, y);
             for (int i = 0; i < _items.Length; i++)
             {
                 if (i > 0) Console.Write("   ");

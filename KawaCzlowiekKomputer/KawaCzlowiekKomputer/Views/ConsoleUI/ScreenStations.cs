@@ -108,7 +108,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 string text = lines[i];
                 if (text.Length > w) text = text[..w];
 
-                Console.SetCursorPosition(_borderLeft + 2, _detailTop + i);
+                ConsoleHelper.SetCursor(_borderLeft + 2, _detailTop + i);
                 Console.ForegroundColor = Colors.Text;
                 Console.Write(text.PadRight(w)); // pełna szerokość czyści stary tekst
             }
@@ -117,7 +117,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
         private void DrawSeparator(int row)
         {
-            Console.SetCursorPosition(_borderLeft, row);
+            ConsoleHelper.SetCursor(_borderLeft, row);
             Console.ForegroundColor = Colors.Border;
             Console.Write("├" + new string('─', _borderWidth - 2) + "┤");
             Console.ResetColor();
@@ -125,7 +125,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
         private static void WriteAt(int left, int row, string text, ConsoleColor color)
         {
-            Console.SetCursorPosition(left, row);
+            ConsoleHelper.SetCursor(left, row);
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();

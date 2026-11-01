@@ -114,11 +114,11 @@ namespace KawaCzlowiekKomputer.Views.Components
 
         private void DrawHeader()
         {
-            Console.SetCursorPosition(_left, _top);
+            ConsoleHelper.SetCursor(_left, _top);
             Console.ForegroundColor = Colors.Title;
             Console.Write(BuildLine(_headers));
 
-            Console.SetCursorPosition(_left, _top + 1);
+            ConsoleHelper.SetCursor(_left, _top + 1);
             Console.ForegroundColor = Colors.Border;
             Console.Write("─" + string.Join("─┼─", _widths.Select(w => new string('─', w))) + "─");
             Console.ResetColor();
@@ -128,7 +128,7 @@ namespace KawaCzlowiekKomputer.Views.Components
         {
             bool selected = index == _selected;
 
-            Console.SetCursorPosition(_left, _top + 2 + index);
+            ConsoleHelper.SetCursor(_left, _top + 2 + index);
             Console.ForegroundColor = selected ? Colors.SelectedForeground : (RowColor?.Invoke(index) ?? Colors.Text);
             Console.BackgroundColor = selected ? Colors.SelectedBackground : ConsoleColor.Black;
             Console.Write(BuildLine(_rows[index]));

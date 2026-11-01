@@ -92,7 +92,7 @@ namespace KawaCzlowiekKomputer.Views.Components
 
         private static void WriteAt(int left, int row, string text, ConsoleColor color)
         {
-            Console.SetCursorPosition(left, row);
+            ConsoleHelper.SetCursor(left, row);
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();

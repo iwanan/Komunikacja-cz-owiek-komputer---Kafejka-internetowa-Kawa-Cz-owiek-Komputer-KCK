@@ -24,18 +24,18 @@ namespace KawaCzlowiekKomputer.Views.Components
 
             Console.ForegroundColor = color;
 
-            Console.SetCursorPosition(left, top);
+            ConsoleHelper.SetCursor(left, top);
             Console.Write("┌" + line + "┐");
 
             for (int y = 1; y < height - 1; y++)
             {
-                Console.SetCursorPosition(left, top + y);
+                ConsoleHelper.SetCursor(left, top + y);
                 Console.Write("│");
-                Console.SetCursorPosition(left + width - 1, top + y);
+                ConsoleHelper.SetCursor(left + width - 1, top + y);
                 Console.Write("│");
             }
 
-            Console.SetCursorPosition(left, top + height - 1);
+            ConsoleHelper.SetCursor(left, top + height - 1);
             Console.Write("└" + new string('─', inner) + "┘");
 
             Console.ResetColor();

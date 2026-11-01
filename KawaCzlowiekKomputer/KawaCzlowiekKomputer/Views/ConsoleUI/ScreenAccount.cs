@@ -49,7 +49,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
                 for (int i = 0; i < labels.Length; i++)
                 {
-                    Console.SetCursorPosition(left + 3, top + 2 + i);
+                    ConsoleHelper.SetCursor(left + 3, top + 2 + i);
                     Console.ForegroundColor = Colors.Accent;
                     Console.Write(labels[i].PadRight(labelWidth));
                     Console.ForegroundColor = Colors.Text;

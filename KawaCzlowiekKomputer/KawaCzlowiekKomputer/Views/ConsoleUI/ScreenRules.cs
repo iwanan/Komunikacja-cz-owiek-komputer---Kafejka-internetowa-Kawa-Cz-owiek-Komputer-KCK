@@ -108,7 +108,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
             string text = $"{index + 1}. {_rules[index].Title}";
             if (text.Length > textWidth) text = text[..textWidth];
 
-            Console.SetCursorPosition(_left + 2, _listTop + index);
+            ConsoleHelper.SetCursor(_left + 2, _listTop + index);
             Console.ForegroundColor = selected ? Colors.SelectedForeground : Colors.Text;
             Console.BackgroundColor = selected ? Colors.SelectedBackground : ConsoleColor.Black;
             Console.Write($" {(selected ? "►" : " ")} {text.PadRight(textWidth)} ");
@@ -125,7 +125,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
                 string text = i < lines.Count ? lines[i] : ""; // puste linie czyszczą stary tekst
                 if (text.Length > w) text = text[..w];
 
-                Console.SetCursorPosition(_left + 2, _detailTop + i);
+                ConsoleHelper.SetCursor(_left + 2, _detailTop + i);
                 Console.ForegroundColor = Colors.Text;
                 Console.Write(text.PadRight(w));
             }
@@ -134,7 +134,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
         private void DrawSeparator(int row)
         {
-            Console.SetCursorPosition(_left, row);
+            ConsoleHelper.SetCursor(_left, row);
             Console.ForegroundColor = Colors.Border;
             Console.Write("├" + new string('─', _width - 2) + "┤");
             Console.ResetColor();
@@ -165,7 +165,7 @@ namespace KawaCzlowiekKomputer.Views.ConsoleUI
 
         private static void WriteAt(int left, int row, string text, ConsoleColor color)
         {
-            Console.SetCursorPosition(left, row);
+            ConsoleHelper.SetCursor(left, row);
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();

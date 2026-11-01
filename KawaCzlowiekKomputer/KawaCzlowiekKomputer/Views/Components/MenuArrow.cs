@@ -97,7 +97,7 @@ namespace KawaCzlowiekKomputer.Views.Components
         {
             bool selected = index == _selected;
 
-            Console.SetCursorPosition(_left, _top + index);
+            ConsoleHelper.SetCursor(_left, _top + index);
             Console.ForegroundColor = selected ? Colors.SelectedForeground : Colors.Text;
             Console.BackgroundColor = selected ? Colors.SelectedBackground : ConsoleColor.Black;
             Console.Write($" {(selected ? "►" : " ")} {_items[index].PadRight(_textWidth)} ");

@@ -85,14 +85,14 @@ namespace KawaCzlowiekKomputer.Views.Components
             int visible = _width - 1;
             if (shown.Length > visible) shown = shown[^visible..];
 
-            Console.SetCursorPosition(_left, _top);
+            ConsoleHelper.SetCursor(_left, _top);
             Console.ForegroundColor = active ? Colors.SelectedForeground : Colors.Text;
             Console.BackgroundColor = active ? Colors.SelectedBackground : ConsoleColor.DarkGray;
             Console.Write(shown.PadRight(_width));
             Console.ResetColor();
 
             if (active)
-                Console.SetCursorPosition(_left + shown.Length, _top);
+                ConsoleHelper.SetCursor(_left + shown.Length, _top);
         }
     }
 }

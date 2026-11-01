@@ -23,7 +23,7 @@ namespace KawaCzlowiekKomputer.Views.Components
         private static void WriteCentered(string text, int row, ConsoleColor color)
         {
             int left = Math.Max(0, (ConsoleHelper.WindowWidth - text.Length) / 2);
-            Console.SetCursorPosition(left, row);
+            ConsoleHelper.SetCursor(left, row);
             Console.ForegroundColor = color;
             Console.Write(text);
             Console.ResetColor();
